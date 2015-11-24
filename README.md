@@ -50,17 +50,51 @@
 ```
 
 ##第四步
-为controller添加注解
+为controller添加注解。
 ```java
-    @CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户")
-    @CodeGenRequest(SearchUserApiRequest.class)
-    @CodeGenResponse(SearchUserApiResponse.class)
-    @RequestMapping(value = "/searchUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public String searchUser(@RequestParam(required = false) String name) throws ParamException, BackEndException {
+@CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户")
+@CodeGenRequest(SearchUserApiRequest.class)
+@CodeGenResponse(SearchUserApiResponse.class)
+@RequestMapping(value = "/searchUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+@ResponseBody
+public String searchUser(SearchUserApiRequest searchUserApiRequest) throws ParamException, BackEndException {
+    return JSON.toJSONString(searchUserApiResponse);
+}
+```
 
-        System.out.println("-----" + name);
+##第五步
+为请求/返回pojo添加注解。
+```java
+public class SearchUserApiRequest {
+    @NotNull
+    @Size(min = 1, max = 20)
+    @CodeGenField("用户所在国家")
+    private String country;
 
-        return "HI " + name;
-    }
+    @NotNull
+    @Min(0)
+    @Max(120)
+    @Digits(integer = 3, fraction = 0)
+    @CodeGenField("年龄")
+    private Integer age;
+
+    @NotNull
+    @Min(0)
+    @Max(250)
+    @Digits(integer = 3, fraction = 2)
+    @CodeGenField("身高")
+    private Double height;
+
+    @CodeGenField("是否已婚")
+    @AvailableValues(values={"0", "1"})
+    private Boolean isMarried;
+
+    ...getter and setter and toString
+}
+```
+
+##第六步
+运行命令生成文档，文档输出在target下
+```shell
+com.jtool:codegen-builder-plugin:build
 ```
