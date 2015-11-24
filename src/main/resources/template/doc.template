@@ -235,7 +235,7 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
           <div class="panel-body">
               ${infoHtmlFileContent}
           </div>
-          <div class="panel-footer">本文档由<a href="https://github.com/JavaServerGroup/jtool-mvn-repository" target="_blank">codegen-builder-plugin</a>生成</div>
+          <div class="panel-footer">本文档由<a href="https://github.com/JavaServerGroup/codegen-builder-plugin" target="_blank">codegen-builder-plugin</a>生成</div>
       </div>
 
     </div>
