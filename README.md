@@ -36,3 +36,31 @@
 	</plugins>
 </build>
 ```
+
+##第三步
+在项目pom.xml添加生成代码注解的依赖：
+```xml
+<dependencies>
+	<dependency>
+	    <groupId>com.jtool</groupId>
+	    <artifactId>codegen-annotation</artifactId>
+	    <version>0.0.1</version>
+	</dependency>
+</dependencies>
+```
+
+##第四步
+为controller添加注解
+```java
+    @CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户")
+    @CodeGenRequest(SearchUserApiRequest.class)
+    @CodeGenResponse(SearchUserApiResponse.class)
+    @RequestMapping(value = "/searchUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String searchUser(@RequestParam(required = false) String name) throws ParamException, BackEndException {
+
+        System.out.println("-----" + name);
+
+        return "HI " + name;
+    }
+```
