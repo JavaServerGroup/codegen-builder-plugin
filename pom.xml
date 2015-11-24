@@ -52,7 +52,7 @@
         <dependency>
             <groupId>com.jtool</groupId>
             <artifactId>codegen-annotation</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -116,12 +116,12 @@
         </repository>
     </repositories>
 
-    <!--<distributionManagement>-->
-    <!--<repository>-->
-    <!--<id>jtool-maven-repository</id>-->
-    <!--<name>Internal Repository</name>-->
-    <!--<url>file://${project.basedir}/../jtool-mvn-repository/releases</url>-->
-    <!--</repository>-->
-    <!--</distributionManagement>-->
+    <distributionManagement>
+    <repository>
+    <id>jtool-maven-repository</id>
+    <name>Internal Repository</name>
+    <url>file://${project.basedir}/../jtool-mvn-repository/releases</url>
+    </repository>
+    </distributionManagement>
 
 </project>
