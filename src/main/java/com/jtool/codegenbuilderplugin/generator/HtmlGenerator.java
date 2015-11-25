@@ -42,7 +42,7 @@ public class HtmlGenerator {
         }
 
         //修改日志内容
-        String changeLogHtmlFileContent = "";
+        String changeLogHtmlFileContent = null;
         try {
             if(builderMojo.getInfoHtmlFile() != null && builderMojo.getInfoHtmlFile().exists()) {
                 changeLogHtmlFileContent = FileUtils.readFileToString(builderMojo.getChangeLogHtmlFile());
@@ -61,7 +61,9 @@ public class HtmlGenerator {
         }
         root.put("lastModifyStr", lastModifyStr);
         root.put("infoHtmlFileContent", infoHtmlFileContent);
-        root.put("changeLogHtmlFileContent", changeLogHtmlFileContent);
+        if(changeLogHtmlFileContent != null && changeLogHtmlFileContent.length() > 0) {
+            root.put("changeLogHtmlFileContent", changeLogHtmlFileContent);
+        }
         root.put("projectName", builderMojo.getProjectName());
 
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);

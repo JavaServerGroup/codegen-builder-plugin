@@ -298,6 +298,7 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
 
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 
+    <#if changeLogHtmlFileContent??>
       <div class="panel panel-default" style="margin-right: 20px; margin-top: 20px;">
           <div class="panel-heading">
               <h3 class="panel-title">更新日志：</h3>
@@ -306,6 +307,7 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
               ${changeLogHtmlFileContent}
           </div>
       </div>
+    </#if>
 
       <#list apiModelList as apiModelItem>
         <#if apiModelItem.deprecated><span class="deprecated"></#if>
