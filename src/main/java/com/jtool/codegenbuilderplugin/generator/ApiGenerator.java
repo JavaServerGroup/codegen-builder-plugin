@@ -4,11 +4,21 @@ import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.RequestParamModel;
 import com.squareup.javapoet.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import org.apache.commons.io.FileUtils;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class ApiGenerator {
@@ -17,7 +27,11 @@ public class ApiGenerator {
 
     public static void genApi(BuilderMojo builderMojo, List<CodeGenModel> apiModelList) throws IOException {
 
-        genApiUtil(builderMojo);
+        try {
+            genApiUtil(builderMojo);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
         for (CodeGenModel codeGenModel : apiModelList) {
 
@@ -135,11 +149,25 @@ public class ApiGenerator {
         return false;
     }
 
-    private static void genApiUtil(BuilderMojo builderMojo) throws IOException {
-        File gsonRequestJava = new File(builderMojo.getBasedir().getAbsolutePath() + "/src/main/resources/template/GsonRequest.java");
-        File multipartRequestJava = new File(builderMojo.getBasedir().getAbsolutePath() + "/src/main/resources/template/MultipartRequest.java");
+    private static void genApiUtil(BuilderMojo builderMojo) throws IOException, URISyntaxException {
 
-        FileUtils.copyFile(gsonRequestJava, new File(builderMojo.getOutPath() + "android/com/jtool/codegen/api/util/GsonRequest.java"));
-        FileUtils.copyFile(multipartRequestJava, new File(builderMojo.getOutPath() + "android/com/jtool/codegen/api/util/MultipartRequest.java"));
+        new File(builderMojo.getOutPath() + "android/com/jtool/codegen/api/util/").mkdirs();
+
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
+        cfg.setClassForTemplateLoading(builderMojo.getClass(), "/template");
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+        try {
+            Template docFile = cfg.getTemplate("GsonRequest.java");
+            Writer out = new FileWriter(new File(builderMojo.getOutPath() + "android/com/jtool/codegen/api/util/GsonRequest.java"));
+            docFile.process(new HashMap<>(), out);
+
+            Template docFile2 = cfg.getTemplate("MultipartRequest.java");
+            Writer out2 = new FileWriter(new File(builderMojo.getOutPath() + "android/com/jtool/codegen/api/util/MultipartRequest.java"));
+            docFile2.process(new HashMap<>(), out2);
+        } catch (TemplateException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }
