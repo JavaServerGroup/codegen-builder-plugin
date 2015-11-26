@@ -1,17 +1,27 @@
 package com.jtool.codegenbuilderplugin.test.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.jtool.codegenannotation.CodeGenApi;
 import com.jtool.codegenannotation.CodeGenException;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
 import com.jtool.codegenbuilderplugin.test.api.request.SearchUserApiRequest;
+import com.jtool.codegenbuilderplugin.test.api.request.UploadAvatarApiRequest;
+import com.jtool.codegenbuilderplugin.test.api.response.Pages;
 import com.jtool.codegenbuilderplugin.test.api.response.SearchUserApiResponse;
+import com.jtool.codegenbuilderplugin.test.api.response.UploadAvatarApiResponse;
+import com.jtool.codegenbuilderplugin.test.api.response.User;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 /*
 <logicInfo>系统为不同的屏幕尺寸提供共4种可选的分辨率<br/>
@@ -27,22 +37,63 @@ public class DemoController {
 	/*
 	<logicInfo>只有没有被丢黑名单的用户才会出现在搜索结果，每十分钟更新缓存一次。</logicInfo>
 	 */
-	@CodeGenApi(name = "查找用户", docSeq = 1, description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户", remark = "这是一个备注信息")
+	@CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户")
 	@CodeGenRequest(SearchUserApiRequest.class)
 	@CodeGenResponse(SearchUserApiResponse.class)
 	@CodeGenException(BackEndException.class)
-	@RequestMapping(value = "/searchUser", method = RequestMethod.POST)
-	public @ResponseBody String searchUser() throws ParamException {
-		return null;
+	@ResponseBody
+	@RequestMapping(value = "/searchUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String searchUser(SearchUserApiRequest searchUserApiRequest) throws ParamException {
+
+		Pages pages = new Pages();
+		pages.setTotalPage(100);
+		pages.setVersion("abcdefghijklmn");
+
+		List<String> urls = new ArrayList<>();
+		urls.add("http://www.google.com");
+		urls.add("http://www.facebook.com");
+
+		List<User> userList = new ArrayList<>();
+
+		User user = new User();
+		user.setHeight(1.56);
+		user.setName("用户1");
+		user.setAge(30);
+		user.setCountry("China");
+		user.setIsMarried(true);
+
+		userList.add(user);
+
+		User user1 = new User();
+		user1.setHeight(1.70);
+		user1.setName("用户2");
+		user1.setAge(36);
+		user1.setCountry("China");
+		user1.setIsMarried(false);
+
+		userList.add(user1);
+
+		SearchUserApiResponse searchUserApiResponse = new SearchUserApiResponse();
+		searchUserApiResponse.setCode("0");
+		searchUserApiResponse.setPages(pages);
+		searchUserApiResponse.setUrls(urls);
+		searchUserApiResponse.setUsers(userList);
+
+		return JSON.toJSONString(searchUserApiResponse);
 	}
 
-	@CodeGenApi(name = "查找用户2", docSeq = 2, description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户", remark = "这是一个备注信息")
-	@CodeGenRequest(SearchUserApiRequest.class)
-	@CodeGenResponse(SearchUserApiResponse.class)
-	@CodeGenException(BackEndException.class)
-	@RequestMapping(value = "/searchUser2", method = RequestMethod.POST)
-	public @ResponseBody String searchUser2() throws ParamException {
-		return null;
+	@CodeGenApi(name = "上传用户头像", description = "上传用户头像")
+	@CodeGenRequest(UploadAvatarApiRequest.class)
+	@CodeGenResponse(UploadAvatarApiResponse.class)
+	@ResponseBody
+	@RequestMapping(value = "/uploadAvatar", method = {RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+	public String uploadAvatar(UploadAvatarApiRequest uploadAvatarRequest) throws ParamException, BackEndException, IOException {
+
+		UploadAvatarApiResponse uploadAvatarResponse = new UploadAvatarApiResponse();
+		uploadAvatarResponse.setCode("0");
+		uploadAvatarResponse.setFileContent(Base64.getEncoder().encodeToString(uploadAvatarRequest.getFile().getBytes()));
+
+		return JSON.toJSONString(uploadAvatarResponse);
 	}
 
 }

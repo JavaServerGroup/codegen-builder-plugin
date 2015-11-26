@@ -5,9 +5,6 @@ import com.jtool.codegenannotation.CodeGenField;
 
 import javax.validation.constraints.*;
 
-/*
-<logicInfo>这是一个请求的逻辑信息。</logicInfo>
-*/
 public class SearchUserApiRequest {
 
     @NotNull
@@ -73,9 +70,5 @@ public class SearchUserApiRequest {
                 ", height=" + height +
                 ", isMarried=" + isMarried +
                 '}';
-    }
-
-    public static void main(String[] strs){
-        System.out.println(new SearchUserApiRequest());
     }
 }

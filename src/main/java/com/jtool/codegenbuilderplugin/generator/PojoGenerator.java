@@ -53,6 +53,11 @@ public class PojoGenerator {
 
     private static void genFieldAndGetSetMethodFromJavaSystemType(TypeSpec.Builder typeSpecBuilder, ParamModel paramModel) {
         String type = paramModel.getType();
+
+        if("org.springframework.web.multipart.MultipartFile".equals(type)){
+            type = "java.io.File";
+        }
+
         String packageNameStr = makePackageName(type);
         String classNameStr = makeClassName(type);
         String key = paramModel.getKey();
