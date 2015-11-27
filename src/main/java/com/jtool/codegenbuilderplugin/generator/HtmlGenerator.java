@@ -36,7 +36,7 @@ public class HtmlGenerator {
                 infoHtmlFileContent = FileUtils.readFileToString(builderMojo.getInfoHtmlFile());
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //ignore
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,7 +48,7 @@ public class HtmlGenerator {
                 changeLogHtmlFileContent = FileUtils.readFileToString(builderMojo.getChangeLogHtmlFile());
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //ignore
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -265,6 +265,6 @@ class IsMaxDouble implements TemplateMethodModelEx {
     @Override
     public Object exec(List list) throws TemplateModelException {
         Double d = (Double)(((SimpleNumber)list.get(0)).getAsNumber());
-        return d.doubleValue() == Double.MAX_VALUE;
+        return d == Double.MAX_VALUE;
     }
 }
