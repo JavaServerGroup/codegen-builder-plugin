@@ -89,9 +89,9 @@ public class SearchUserApiRequest {
     @CodeGenField("身高")
     private Double height;
 
-    @CodeGenField("是否已婚")
+    @CodeGenField("是否已婚, 0代表没结婚，1代表结婚")
     @AvailableValues(values={"0", "1"})
-    private Boolean isMarried;
+    private String isMarried;
 
     ...getter and setter and toString
 }
