@@ -1,5 +1,7 @@
 # codegen-builder-plugin
 
+如果你正新开始一个服务器端API项目，使用的正是maven, Spring MVC技术，并使用JSON作为服务器返回的格式，那么codegen-builder-plugin将让你免费获得自动生成文档，自动生成Android客户端代码等功能。
+
 ##第一步
 在项目pom.xml添加新的插件repository
 
@@ -20,7 +22,9 @@
 ```
 
 ##第二步
-在项目pom.xml添加插件依赖，其中scanBasePackage是需要扫描的包名;projectName设置项目的名称，主要用户生成文档的标题和名字，
+在项目pom.xml添加插件依赖。
+* scanBasePackage是需要扫描的包名;
+* projectName设置项目的名称，主要用户生成文档的标题和名字，
 ```xml
 <build>
 	<plugins>
