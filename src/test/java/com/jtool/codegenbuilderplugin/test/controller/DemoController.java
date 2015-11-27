@@ -13,6 +13,9 @@ import com.jtool.codegenbuilderplugin.test.api.response.UploadAvatarApiResponse;
 import com.jtool.codegenbuilderplugin.test.api.response.User;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
+import com.jtool.validator.ParamBeanValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,16 +37,23 @@ import java.util.List;
 @Controller
 public class DemoController {
 
-	/*
-	<logicInfo>只有没有被丢黑名单的用户才会出现在搜索结果，每十分钟更新缓存一次。</logicInfo>
-	 */
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+
 	@CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户")
 	@CodeGenRequest(SearchUserApiRequest.class)
 	@CodeGenResponse(SearchUserApiResponse.class)
-	@CodeGenException(BackEndException.class)
 	@ResponseBody
 	@RequestMapping(value = "/searchUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String searchUser(SearchUserApiRequest searchUserApiRequest) throws ParamException {
+	public String searchUser(SearchUserApiRequest searchUserApiRequest) throws ParamException, BackEndException {
+
+
+		log.debug("请求获得参数：" + searchUserApiRequest);
+
+		log.debug("请求参数是否合法：" + !ParamBeanValidator.isNotValid(searchUserApiRequest));
+
+		if(ParamBeanValidator.isNotValid(searchUserApiRequest)) {
+			return "{\"code\":0}";
+		}
 
 		Pages pages = new Pages();
 		pages.setTotalPage(100);
@@ -56,20 +66,20 @@ public class DemoController {
 		List<User> userList = new ArrayList<>();
 
 		User user = new User();
-		user.setHeight(1.56);
+		user.setHeight(searchUserApiRequest.getHeight());
 		user.setName("用户1");
-		user.setAge(30);
-		user.setCountry("China");
-		user.setIsMarried(true);
+		user.setAge(searchUserApiRequest.getAge());
+		user.setCountry(searchUserApiRequest.getCountry());
+		user.setIsMarried(!searchUserApiRequest.getIsMarried().equals("0"));
 
 		userList.add(user);
 
 		User user1 = new User();
-		user1.setHeight(1.70);
+		user1.setHeight(searchUserApiRequest.getHeight());
 		user1.setName("用户2");
-		user1.setAge(36);
-		user1.setCountry("China");
-		user1.setIsMarried(false);
+		user1.setAge(searchUserApiRequest.getAge());
+		user1.setCountry(searchUserApiRequest.getCountry());
+		user1.setIsMarried(searchUserApiRequest.getIsMarried().equals("0"));
 
 		userList.add(user1);
 
@@ -88,6 +98,14 @@ public class DemoController {
 	@ResponseBody
 	@RequestMapping(value = "/uploadAvatar", method = {RequestMethod.POST}, produces = "application/json;charset=UTF-8")
 	public String uploadAvatar(UploadAvatarApiRequest uploadAvatarRequest) throws ParamException, BackEndException, IOException {
+
+		log.debug("请求获得参数：" + uploadAvatarRequest);
+
+		log.debug("请求参数是否合法：" + !ParamBeanValidator.isNotValid(uploadAvatarRequest));
+
+		if(ParamBeanValidator.isNotValid(uploadAvatarRequest)) {
+			return "{\"code\":0}";
+		}
 
 		UploadAvatarApiResponse uploadAvatarResponse = new UploadAvatarApiResponse();
 		uploadAvatarResponse.setCode("0");
