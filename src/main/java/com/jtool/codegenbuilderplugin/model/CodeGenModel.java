@@ -6,6 +6,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 
 	private Double docSeq;
 	private String apiName;
+	private String apiMethodName;
 	private String description;
 	private String host;
 	private String url;
@@ -156,11 +157,20 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.isGenSDK = isGenSDK;
 	}
 
+	public String getApiMethodName() {
+		return apiMethodName;
+	}
+
+	public void setApiMethodName(String apiMethodName) {
+		this.apiMethodName = apiMethodName;
+	}
+
 	@Override
 	public String toString() {
 		return "CodeGenModel{" +
 				"docSeq=" + docSeq +
 				", apiName='" + apiName + '\'' +
+				", apiMethodName='" + apiMethodName + '\'' +
 				", description='" + description + '\'' +
 				", host='" + host + '\'' +
 				", url='" + url + '\'' +

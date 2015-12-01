@@ -65,8 +65,13 @@ public class MethodParser {
         //分析获得返回pojo的名字
         codeGenModel.setResponsePojoName(parseResponsePojoName(method));
         codeGenModel.setIsGenSDK(parseIsGenSDK(method));
+        codeGenModel.setApiMethodName(parseApiMethodName(method));
 
         return codeGenModel;
+    }
+
+    private static String parseApiMethodName(Method method) {
+        return method.getName();
     }
 
     private static Object parseSuccessReturn(BuilderMojo builderMojo, Method method) {

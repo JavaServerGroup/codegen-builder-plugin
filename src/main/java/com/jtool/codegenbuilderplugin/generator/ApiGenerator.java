@@ -42,8 +42,8 @@ public class ApiGenerator {
                 String requestPojoName = codeGenModel.getRequestPojoName();
                 //返回的pojo名
                 String responsePojoName = codeGenModel.getResponsePojoName();
-                //api的类名，规则是约定的请求pojo名去掉最后的Request
-                String apiName = requestPojoName.substring(0, requestPojoName.lastIndexOf("Request"));
+                //api的类名，就是controller的方法名加Api
+                String apiName = codeGenModel.getApiMethodName() + "Api";
 
                 //api类Builder
                 TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(apiName).addModifiers(Modifier.PUBLIC);
