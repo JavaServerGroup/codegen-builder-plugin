@@ -4,6 +4,7 @@ import com.jtool.codegenannotation.CodeGenField;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 public class SearchUserApiResponse {
 
@@ -19,6 +20,9 @@ public class SearchUserApiResponse {
 
     @CodeGenField("url的字符串列表")
     private List<String> urls;
+
+    @CodeGenField("电话字符串列表")
+    private Set<String> tels;
 
     public String getCode() {
         return code;
@@ -52,6 +56,14 @@ public class SearchUserApiResponse {
         this.urls = urls;
     }
 
+    public Set<String> getTels() {
+        return tels;
+    }
+
+    public void setTels(Set<String> tels) {
+        this.tels = tels;
+    }
+
     @Override
     public String toString() {
         return "SearchUserApiResponse{" +
@@ -59,6 +71,7 @@ public class SearchUserApiResponse {
                 ", users=" + users +
                 ", pages=" + pages +
                 ", urls=" + urls +
+                ", tels=" + tels +
                 '}';
     }
 }

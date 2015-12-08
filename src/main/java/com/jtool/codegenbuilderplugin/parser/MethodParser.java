@@ -15,9 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MethodParser {
 
@@ -147,6 +145,46 @@ public class MethodParser {
 
                 //设置值到list
                 field.set(obj, list);
+
+            } else if (field.getType().equals(Set.class)) {
+
+                //生成一个set
+                Set<Object> set = new HashSet<>();
+
+                Type fc = field.getGenericType();
+
+                if (fc == null) {
+                    continue;
+                }
+
+                if (fc instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) fc;
+                    String className = pt.getActualTypeArguments()[0].getTypeName();
+
+                    //List里面的泛型参数
+                    switch (className) {
+                        case "java.lang.String" :
+                            set.add("string");
+                            break;
+                        case "java.lang.Boolean" :
+                            set.add(false);
+                            break;
+                        case "java.lang.Short" :
+                        case "java.lang.Integer" :
+                        case "java.lang.Long" :
+                            set.add(0);
+                            break;
+                        case "java.lang.Float" :
+                        case "java.lang.Double" :
+                            set.add(0);
+                            break;
+                        default:
+                            set.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className))));
+                    }
+                }
+
+                //设置值到list
+                field.set(obj, set);
 
             } else if(!field.getType().isPrimitive()) {
                 field.set(obj, genParamJsonObj(builderMojo, field.getType()));

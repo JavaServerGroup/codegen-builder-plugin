@@ -140,7 +140,7 @@ public class PojoGenerator {
                 //根据java系统自有的类型生成字段，get, set方法
                 genFieldAndGetSetMethodFromJavaSystemType(typeSpecBuilder, responseParamModel);
 
-            } else if(isList(responseParamTypeString)) {//检查是否List类型
+            } else if(isListOrSet(responseParamTypeString)) {//检查是否List or Set类型
 
                 String packageName;
                 String className;
@@ -202,8 +202,8 @@ public class PojoGenerator {
         }
     }
 
-    private static boolean isList(String responseParamTypeString) {
-        return responseParamTypeString.startsWith("java.util.List");
+    private static boolean isListOrSet(String responseParamTypeString) {
+        return responseParamTypeString.startsWith("java.util.List") || responseParamTypeString.startsWith("java.util.Set");
     }
 
     private static boolean isJavaSystemType(BuilderMojo builderMojo, String responseParamTypeString) {
