@@ -11,6 +11,7 @@ import com.jtool.codegenbuilderplugin.model.ResponseParamModel;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.*;
@@ -104,7 +105,7 @@ class HtmlConstraintGenerator implements TemplateMethodModelEx {
                 for (int i = 0; i < defaultListAdapter.size(); i++) {
                     Object obj = ((StringModel) defaultListAdapter.get(i)).getWrappedObject();
 
-                    if (obj instanceof Null) {
+                    if (obj instanceof ObjectUtils.Null) {
                         result += "<div>必须为null</div>";
                     } else if (obj instanceof AssertTrue) {
                         result += "<div>必须为True</div>";
@@ -212,9 +213,13 @@ class HtmlSuccessReturnJsonGenerator implements TemplateMethodModelEx {
     @Override
     public Object exec(List list) throws TemplateModelException {
 
-        if (list != null && list.size() == 1) {
-            return JSON.toJSONString(((StringModel) list.get(0)).getWrappedObject(), SerializerFeature.PrettyFormat);
-        } else {
+        try {
+            if (list != null && list.size() == 1) {
+                return JSON.toJSONString(((StringModel) list.get(0)).getWrappedObject(), SerializerFeature.PrettyFormat);
+            } else {
+                return " --- ";
+            }
+        } catch (NullPointerException e) {
             return " --- ";
         }
 

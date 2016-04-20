@@ -2,7 +2,6 @@ package com.jtool.codegenbuilderplugin.test.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.jtool.codegenannotation.CodeGenApi;
-import com.jtool.codegenannotation.CodeGenException;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
 import com.jtool.codegenbuilderplugin.test.api.request.SearchUserApiRequest;
@@ -112,6 +111,29 @@ public class DemoController {
 		uploadAvatarResponse.setFileContent(Base64.getEncoder().encodeToString(uploadAvatarRequest.getFile().getBytes()));
 
 		return JSON.toJSONString(uploadAvatarResponse);
+	}
+
+	@CodeGenApi(name = "获取信息", description = "无参数请求获取信息")
+	@CodeGenResponse(SearchUserApiResponse.class)
+	@ResponseBody
+	@RequestMapping(value = "/getUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getUser() throws ParamException, BackEndException {
+
+		SearchUserApiResponse searchUserApiResponse = new SearchUserApiResponse();
+		searchUserApiResponse.setCode("0");
+
+		return JSON.toJSONString(searchUserApiResponse);
+	}
+
+	@CodeGenApi(name = "response是DIY", description = "测试response是DIY", genSDK = false)
+	@ResponseBody
+	@RequestMapping(value = "/getDIY", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getDIY() throws ParamException, BackEndException {
+
+		SearchUserApiResponse searchUserApiResponse = new SearchUserApiResponse();
+		searchUserApiResponse.setCode("0");
+
+		return JSON.toJSONString(searchUserApiResponse);
 	}
 
 }

@@ -6,17 +6,13 @@ import com.jtool.codegenbuilderplugin.model.ParamModel;
 import com.jtool.codegenbuilderplugin.model.RequestParamModel;
 import com.jtool.codegenbuilderplugin.model.ResponseParamModel;
 import com.squareup.javapoet.*;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
 
+import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.lang.model.element.Modifier;
 
 public class PojoGenerator {
 
@@ -35,6 +31,12 @@ public class PojoGenerator {
     }
 
     private static void genRequestPojo(BuilderMojo builderMojo, String pojoName, List<RequestParamModel> requestParamModelList) throws ClassNotFoundException, IOException {
+
+        if(pojoName == null) {
+            return;
+        } else {
+            builderMojo.getLog().debug("准备生成RequestPojo:" + pojoName);
+        }
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(pojoName).addModifiers(Modifier.PUBLIC);
 
@@ -125,6 +127,10 @@ public class PojoGenerator {
     }
 
     private static TypeSpec genResponsePojo(BuilderMojo builderMojo, String pojoName, List<ResponseParamModel> responseParamModelList) throws IOException, ClassNotFoundException {
+
+        if(pojoName == null || "".equals(pojoName)) {
+            return null;
+        }
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(pojoName).addModifiers(Modifier.PUBLIC);
 

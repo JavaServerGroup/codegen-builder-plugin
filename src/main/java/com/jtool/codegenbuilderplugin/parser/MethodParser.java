@@ -73,8 +73,14 @@ public class MethodParser {
     }
 
     private static Object parseSuccessReturn(BuilderMojo builderMojo, Method method) {
-        Class clazz = method.getAnnotation(CodeGenResponse.class).value();
+
+        CodeGenResponse codeGenResponse = method.getAnnotation(CodeGenResponse.class);
+        if(codeGenResponse == null) {
+            return null;
+        }
+
         try {
+            Class clazz = method.getAnnotation(CodeGenResponse.class).value();
             return genParamJsonObj(builderMojo, clazz);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -298,6 +304,10 @@ public class MethodParser {
     }
 
     private static String parseResponsePojoName(Method method) {
+        CodeGenResponse codeGenResponse = method.getAnnotation(CodeGenResponse.class);
+        if(codeGenResponse == null) {
+            return null;
+        }
         Class clazz = method.getAnnotation(CodeGenResponse.class).value();
         String typeName = clazz.getTypeName();
         typeName = typeName.substring(typeName.lastIndexOf(".") + 1);
@@ -305,7 +315,11 @@ public class MethodParser {
     }
 
     private static String parseRequestPojoName(Method method) {
-        Class clazz = method.getAnnotation(CodeGenRequest.class).value();
+        CodeGenRequest codeGenRequest = method.getAnnotation(CodeGenRequest.class);
+        if(codeGenRequest == null) {
+            return null;
+        }
+        Class clazz = codeGenRequest.value();
         String typeName = clazz.getTypeName();
         typeName = typeName.substring(typeName.lastIndexOf(".") + 1);
         return typeName;

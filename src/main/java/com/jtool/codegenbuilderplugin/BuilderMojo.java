@@ -112,6 +112,9 @@ public class BuilderMojo extends AbstractMojo {
             ApiGenerator.genApi(this, apiModelList);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            this.getLog().debug("生成api的时候发生错误");
+            e.printStackTrace();
         }
     }
 

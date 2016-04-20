@@ -16,6 +16,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 	private String responsePojoName;
 	private List<RequestParamModel> requestParamModelList;
 	private List<ResponseParamModel> responseParamModelList;
+	private String responseDIY;
 	private List<Exception> errorType;
 
 	private Object successReturn;
@@ -165,6 +166,14 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.apiMethodName = apiMethodName;
 	}
 
+	public String getResponseDIY() {
+		return responseDIY;
+	}
+
+	public void setResponseDIY(String responseDIY) {
+		this.responseDIY = responseDIY;
+	}
+
 	@Override
 	public String toString() {
 		return "CodeGenModel{" +
@@ -180,6 +189,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 				", responsePojoName='" + responsePojoName + '\'' +
 				", requestParamModelList=" + requestParamModelList +
 				", responseParamModelList=" + responseParamModelList +
+				", responseDIY='" + responseDIY + '\'' +
 				", errorType=" + errorType +
 				", successReturn=" + successReturn +
 				", remark='" + remark + '\'' +
