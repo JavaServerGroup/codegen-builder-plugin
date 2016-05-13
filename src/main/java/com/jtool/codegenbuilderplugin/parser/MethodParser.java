@@ -378,6 +378,7 @@ public class MethodParser {
                     resultException.add((Exception)exceptionType.newInstance());
                 } catch (InstantiationException e) {
                     e.printStackTrace();
+                    throw new RuntimeException("实例化对象失败,请添加不带参数的构造函数以便生成成功.");
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -393,6 +394,7 @@ public class MethodParser {
                     resultException.add((Exception)clazz.newInstance());
                 } catch (InstantiationException e) {
                     e.printStackTrace();
+                    throw new RuntimeException("实例化对象失败,请添加不带参数的构造函数以便生成成功.");
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
