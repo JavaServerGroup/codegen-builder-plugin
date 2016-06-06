@@ -66,6 +66,7 @@ public class HtmlGenerator {
             root.put("changeLogHtmlFileContent", changeLogHtmlFileContent);
         }
         root.put("projectName", builderMojo.getProjectName());
+        root.put("hasRequestParams", true);//是否有请求参数
 
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
         cfg.setClassForTemplateLoading(builderMojo.getClass(), "/template");

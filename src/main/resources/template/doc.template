@@ -106,7 +106,10 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
       */
 
       .main {
-
+        font-size: 8px;
+      }
+      .main pre {
+        font-size: 8px;
       }
       @media (min-width: 768px) {
       .main {
@@ -147,7 +150,7 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
       .table {margin: 0;}
       .table th {background-color: #777777;color: #FFFFFF;text-align:left;}
       .apiListNav {font-size: 14px;padding: 5px; background-color: #444444;color: #FFFFFF; margin: 0px;}
-      .headA, .headA:hover {font-size: 20px;padding: 10px;background-color: #444444;color: #FFFFFF; margin: 20px 0 0 0;font-weight: bold;display: block; }
+      .headA, .headA:hover {font-size: 12px;padding: 5px;background-color: #444444;color: #FFFFFF; margin: 10px 0 0 0;font-weight: bold;display: block; }
       .deprecated {text-decoration:line-through;}
       .deprecated table {text-decoration:line-through;}
 
@@ -314,8 +317,12 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
           <a class="headA" rel="${apiModelItem.apiName}"><#if !isMaxDouble(apiModelItem.docSeq)>[${apiModelItem.docSeq}]</#if>${apiModelItem.apiName}</a>
           <table class="table table-striped table-bordered table-condensed">
             <tr>
-              <td>API说明:</td>
+              <td width="90px;">API说明:</td>
               <td>${apiModelItem.description}</td>
+            </tr>
+            <tr>
+              <td>Example:</td>
+              <td>${apiModelItem.curlExample}</td>
             </tr>
             <tr>
               <td>Host:</td>
@@ -329,27 +336,29 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
               <td>请求方法:</td>
               <td>${apiModelItem.httpMethod}</td>
             </tr>
-            <tr>
-              <td>请求参数:</td>
-              <td>
-                <table class="table table-striped table-condensed">
-                  <tr>
-                    <th width="15%">参数名</th>
-                    <th width="8%">必要参数</th>
-                    <th width="27%">限制</th>
-                    <th width="50%">说明</th>
-                  </tr>
-                  <#list apiModelItem.requestParamModelList as requestParamModelItem>
+            <#if (apiModelItem.requestParamModelList?size>0) >
+              <tr>
+                <td>请求参数:</td>
+                <td>
+                  <table class="table table-striped table-condensed">
                     <tr>
-                      <td>${requestParamModelItem.key}</td>
-                      <td><#if requestParamModelItem.required>必须<#else>可选</#if></td>
-                      <td>${constraint(requestParamModelItem.constraint)}</td>
-                      <td>${requestParamModelItem.comment}</td>
+                      <th width="15%">参数名</th>
+                      <th width="8%">必要参数</th>
+                      <th width="27%">限制</th>
+                      <th width="50%">说明</th>
                     </tr>
-                  </#list>
-                </table>
-              </td>
-            </tr>
+                    <#list apiModelItem.requestParamModelList as requestParamModelItem>
+                      <tr>
+                        <td>${requestParamModelItem.key}</td>
+                        <td><#if requestParamModelItem.required>必须<#else>可选</#if></td>
+                        <td>${constraint(requestParamModelItem.constraint)}</td>
+                        <td>${requestParamModelItem.comment}</td>
+                      </tr>
+                    </#list>
+                  </table>
+                </td>
+              </tr>
+            </#if>
             <tr>
               <td>错误返回:</td>
               <td class="danger">
@@ -373,27 +382,29 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
                 </table>
               </td>
             </tr>
-            <tr>
-              <td>正确返回:</td>
-              <td class="success">
-                <pre>${successReturnJson(apiModelItem.successReturn)}</pre>
-              </td>
-            </tr>
-            <tr>
-              <td>正确返回说明:</td>
-              <td>
-                <table class="table table-striped table-condensed">
-                  <tr>
-                    <th>参数名</th>
-                    <th>必要参数</th>
-                    <th>说明</th>
-                  </tr>
-                  <#list apiModelItem.responseParamModelList as responseParamModelItem>
-                    ${successReturnParam(responseParamModelItem)}
-                  </#list>
-                  </table>
-              </td>
-            </tr>
+            <#if (apiModelItem.responseParamModelList?size>0) >
+              <tr>
+                <td>正确返回:</td>
+                <td class="success">
+                  <pre>${successReturnJson(apiModelItem.successReturn)}</pre>
+                </td>
+              </tr>
+              <tr>
+                <td>正确返回说明:</td>
+                <td>
+                  <table class="table table-striped table-condensed">
+                    <tr>
+                      <th>参数名</th>
+                      <th>必要参数</th>
+                      <th>说明</th>
+                    </tr>
+                    <#list apiModelItem.responseParamModelList as responseParamModelItem>
+                      ${successReturnParam(responseParamModelItem)}
+                    </#list>
+                    </table>
+                </td>
+              </tr>
+            </#if>
           </table>
         <#if apiModelItem.deprecated></span></#if>
       </#list>

@@ -42,7 +42,7 @@ public class MethodParser {
         CodeGenModel codeGenModel = new CodeGenModel();
         codeGenModel.setDocSeq(paresDocSeq(method));
         codeGenModel.setApiName(paresApiName(method));
-        codeGenModel.setHost(paresHost(method));
+        codeGenModel.setHost(paresHost(builderMojo, method));
         codeGenModel.setDescription(paresDescription(method));
         codeGenModel.setHttpMethod(paresHttpMethod(method));
         codeGenModel.setRemark(paresRemark(method));
@@ -64,8 +64,73 @@ public class MethodParser {
         codeGenModel.setResponsePojoName(parseResponsePojoName(method));
         codeGenModel.setIsGenSDK(parseIsGenSDK(method));
         codeGenModel.setApiMethodName(parseApiMethodName(method));
+        //分析获得curlExample
+        codeGenModel.setCurlExample(parseCurlExample(codeGenModel));
 
         return codeGenModel;
+    }
+
+    private static String parseCurlExample(CodeGenModel codeGenModel) {
+
+        String result = "";
+
+        String httpMethod = codeGenModel.getHttpMethod();
+        String uri = codeGenModel.getUrl();
+
+        List<RequestParamModel> requestParamModelList = codeGenModel.getRequestParamModelList();
+
+        if("GET".equals(httpMethod)) {
+
+            String queryString = "";
+
+            for(int i = 0; i < requestParamModelList.size(); i++) {
+                if(i != 0) {
+                    queryString += "&";
+                }
+
+                queryString += requestParamModelList.get(i).getKey() + "=";
+            }
+
+            result = "curl -X GET \"http://host:port" + uri;
+
+            if(!"".equals(queryString)) {
+                result += "?" + queryString;
+            }
+
+            result += "\"";
+
+        } else if("POST".equals(httpMethod)) {
+
+            if(isPostFile(requestParamModelList)) {
+                String queryString = "";
+
+                for(RequestParamModel requestParamModel : requestParamModelList) {
+                    queryString += " -F \"" + requestParamModel.getKey() + "=" +  "\" ";
+                }
+
+                result = "curl -X POST " + queryString + " \"http://host:port" + uri + "\"";
+            } else {
+                String queryString = "";
+
+                for(RequestParamModel requestParamModel : requestParamModelList) {
+                    queryString += " --data-urlencode \"" + requestParamModel.getKey() + "=" +  "\" ";
+                }
+
+                result = "curl -X POST " + queryString + " \"http://host:port" + uri + "\"";
+            }
+        }
+
+        return result;
+    }
+
+    private static boolean isPostFile(List<RequestParamModel> requestParamModelList) {
+        for(RequestParamModel requestParamModel : requestParamModelList) {
+            if("org.springframework.web.multipart.MultipartFile".equals(requestParamModel.getType())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static String parseApiMethodName(Method method) {
@@ -329,8 +394,24 @@ public class MethodParser {
         return method.getAnnotation(CodeGenApi.class).name();
     }
 
-    private static String paresHost(Method method) {
-        return method.getAnnotation(CodeGenApi.class).host();
+    private static String paresHost(BuilderMojo builderMojo, Method method) {
+        String host = method.getAnnotation(CodeGenApi.class).host();
+
+        if(!"host(get from initialization)".equals(host)) {//host不等于默认值,就是用户指定了,返回指定值
+            return host;
+        } else {//如果等于默认,就检查配置有没有值,有就返回配置值
+            Map<String, String> hostsMap = builderMojo.getHosts();
+
+            if(hostsMap != null && hostsMap.size() > 0) {
+                String result = "";
+                for(Map.Entry<String, String> entry : hostsMap.entrySet()) {
+                    result += entry.getKey() + ":&nbsp;&nbsp;" + entry.getValue() + "<br/>";
+                }
+                return result;
+            }
+        }
+
+        return host;
     }
 
     private static String paresDescription(Method method) {

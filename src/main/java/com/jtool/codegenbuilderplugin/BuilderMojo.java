@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @goal build
@@ -41,6 +42,11 @@ public class BuilderMojo extends AbstractMojo {
      * @required
      */
     private String scanBasePackage;
+
+    /**
+     * @parameter
+     */
+    private Map<String, String> hosts;
 
     /**
      * @parameter
@@ -73,6 +79,12 @@ public class BuilderMojo extends AbstractMojo {
      * @readonly
      */
     private File changeLogHtmlFile;
+
+    /**
+     * @parameter expression = "${skipGenAndroidSDK}"
+     * @parameter default-value = "false"
+     */
+    private boolean skipGenAndroidSDK;
 
     private ClassLoaderInterface classLoaderInterface;
 
@@ -109,7 +121,9 @@ public class BuilderMojo extends AbstractMojo {
 
         //生成api
         try {
-            ApiGenerator.genApi(this, apiModelList);
+            if(!this.skipGenAndroidSDK) {
+                ApiGenerator.genApi(this, apiModelList);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -198,5 +212,13 @@ public class BuilderMojo extends AbstractMojo {
 
     public void setChangeLogHtmlFile(File changeLogHtmlFile) {
         this.changeLogHtmlFile = changeLogHtmlFile;
+    }
+
+    public Map<String, String> getHosts() {
+        return hosts;
+    }
+
+    public void setHosts(Map<String, String> hosts) {
+        this.hosts = hosts;
     }
 }

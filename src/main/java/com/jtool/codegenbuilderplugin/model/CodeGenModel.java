@@ -18,6 +18,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 	private List<ResponseParamModel> responseParamModelList;
 	private String responseDIY;
 	private List<Exception> errorType;
+	private String curlExample;
 
 	private Object successReturn;
 	private String remark;
@@ -174,6 +175,14 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.responseDIY = responseDIY;
 	}
 
+	public String getCurlExample() {
+		return curlExample;
+	}
+
+	public void setCurlExample(String curlExample) {
+		this.curlExample = curlExample;
+	}
+
 	@Override
 	public String toString() {
 		return "CodeGenModel{" +
@@ -191,6 +200,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 				", responseParamModelList=" + responseParamModelList +
 				", responseDIY='" + responseDIY + '\'' +
 				", errorType=" + errorType +
+				", curlExample='" + curlExample + '\'' +
 				", successReturn=" + successReturn +
 				", remark='" + remark + '\'' +
 				", isDeprecated=" + isDeprecated +

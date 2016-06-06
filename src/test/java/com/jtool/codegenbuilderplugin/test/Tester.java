@@ -8,6 +8,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class Tester {
 
@@ -21,9 +23,14 @@ public class Tester {
         builderMojo.setClassLoaderInterface(testContextClassLoader);
 
         File baseDirFile = new File(baseUrl);
-
         builderMojo.setOutPath(baseDirFile.getAbsolutePath() + "/target/");
         builderMojo.setBasedir(baseDirFile);
+
+        Map<String, String> hosts = new Hashtable<>();
+        hosts.put("新加坡", "172.17.20.13");
+        hosts.put("爱尔兰", "172.17.0.158");
+        builderMojo.setHosts(hosts);
+
         builderMojo.setProjectName("codegen-builder-plugin");
         builderMojo.setScanSource("/src/test/java/");
         builderMojo.setScanBasePackage("com.jtool.codegenbuilderplugin");
