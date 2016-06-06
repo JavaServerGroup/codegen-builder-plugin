@@ -31,7 +31,7 @@
 	    <plugin>
 	        <groupId>com.jtool</groupId>
 	        <artifactId>codegen-builder-plugin</artifactId>
-	        <version>0.0.1</version>
+	        <version>${latest-releases}</version>
 	        <configuration>
 	            <projectName>自动代码生成demo</projectName>
 	            <scanBasePackage>com.jtool.codegendemo</scanBasePackage>
