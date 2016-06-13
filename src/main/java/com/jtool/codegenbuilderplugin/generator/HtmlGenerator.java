@@ -3,7 +3,6 @@ package com.jtool.codegenbuilderplugin.generator;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jtool.annotation.AvailableValues;
-import com.jtool.codegenannotation.CodeGenExceptionDefine;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.LogicInfo;
@@ -17,15 +16,18 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HtmlGenerator {
 
-    public static void genHtmlDoc(BuilderMojo builderMojo, List<CodeGenModel> apiModelList, List<LogicInfo> logicInfos) {
+    public static void genHtmlDoc(BuilderMojo builderMojo, List<CodeGenModel> codeGenModelList, List<LogicInfo> logicInfos) {
+        Map<String, List<CodeGenModel>> codeGenModelMapByForWho = groupCodeGenModelListByFowWho(codeGenModelList);
+        for(Map.Entry<String, List<CodeGenModel>> entry : codeGenModelMapByForWho.entrySet()) {
+            genEachHtmlDoc(builderMojo, entry.getKey(), entry.getValue(), logicInfos);
+        }
+    }
 
+    private static void genEachHtmlDoc(BuilderMojo builderMojo, String forWho, List<CodeGenModel> codeGenModelList, List<LogicInfo> logicInfoList) {
         //文档最后修改时间
         String lastModifyStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String lastModifyDayStr = new SimpleDateFormat("yyyy_MM_dd").format(new Date());
@@ -56,9 +58,9 @@ public class HtmlGenerator {
 
         //组装数据
         Map<String, Object> root = new HashMap<>();
-        root.put("apiModelList", apiModelList);
-        if(logicInfos != null && logicInfos.size() > 0) {
-            root.put("logicInfoList", logicInfos);
+        root.put("apiModelList", codeGenModelList);
+        if(logicInfoList != null && logicInfoList.size() > 0) {
+            root.put("logicInfoList", logicInfoList);
         }
         root.put("lastModifyStr", lastModifyStr);
         root.put("infoHtmlFileContent", infoHtmlFileContent);
@@ -73,20 +75,40 @@ public class HtmlGenerator {
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         cfg.setSharedVariable("constraint", new HtmlConstraintGenerator());
-        cfg.setSharedVariable("errorTypeCode", new HtmlErrorTypeCodeGenerator());
-        cfg.setSharedVariable("errorTypeDesc", new HtmlErrorTypeDescGenerator());
         cfg.setSharedVariable("successReturnJson", new HtmlSuccessReturnJsonGenerator());
         cfg.setSharedVariable("successReturnParam", new HtmlSuccessReturnGenerator());
         cfg.setSharedVariable("isMaxDouble", new IsMaxDouble());
 
         try {
             Template docFile = cfg.getTemplate("doc.template");
-            Writer out = new FileWriter(new File(builderMojo.getOutPath() + "/" + builderMojo.getProjectName() + "_doc_" + lastModifyDayStr + ".html"));
+            String fileName;
+            if("default".equals(forWho)) {
+                fileName = builderMojo.getOutPath() + "/" + builderMojo.getProjectName() + "_doc_" + lastModifyDayStr + ".html";
+            } else {
+                fileName = builderMojo.getOutPath() + "/" + builderMojo.getProjectName() + "_" + forWho + "_doc_" + lastModifyDayStr + ".html";
+            }
+            Writer out = new FileWriter(new File(fileName));
             docFile.process(root, out);
         } catch (TemplateException | IOException e) {
             e.printStackTrace();
         }
+    }
 
+    //根据forWho属性,将list分组成一个以forWho为key,以相应相同forWho组成的list为值的map
+    private static Map<String, List<CodeGenModel>> groupCodeGenModelListByFowWho(List<CodeGenModel> codeGenModelList) {
+        Map<String, List<CodeGenModel>> result = new HashMap<>();
+        for(CodeGenModel codeGenModel : codeGenModelList) {
+            List<CodeGenModel> codeGenModelFromMap = result.get(codeGenModel.getForWho());
+            if(codeGenModelFromMap == null) {//如果指定forWho没找到list,就要新建一个并把codeGenModel加到这个list,最后放到map里面
+                codeGenModelFromMap = new ArrayList<>();
+                codeGenModelFromMap.add(codeGenModel);
+                result.put(codeGenModel.getForWho(), codeGenModelFromMap);
+            } else {//能找到就直接添加codeGenModel到list
+                codeGenModelFromMap.add(codeGenModel);
+                result.put(codeGenModel.getForWho(), codeGenModelFromMap);
+            }
+        }
+        return result;
     }
 }
 
@@ -156,50 +178,6 @@ class HtmlConstraintGenerator implements TemplateMethodModelEx {
 
             } else {
                 return " --- ";
-            }
-
-        } else {
-            return " --- ";
-        }
-
-    }
-}
-
-class HtmlErrorTypeCodeGenerator implements TemplateMethodModelEx {
-
-    @Override
-    public Object exec(List list) throws TemplateModelException {
-
-        if (list != null && list.size() == 1) {
-
-            CodeGenExceptionDefine codeGenExceptionDefine = ((StringModel)list.get(0)).getWrappedObject().getClass().getAnnotation(CodeGenExceptionDefine.class);
-
-            if(codeGenExceptionDefine != null) {
-                return codeGenExceptionDefine.code();
-            } else {
-                return "";
-            }
-
-        } else {
-            return " --- ";
-        }
-
-    }
-}
-
-class HtmlErrorTypeDescGenerator implements TemplateMethodModelEx {
-
-    @Override
-    public Object exec(List list) throws TemplateModelException {
-
-        if (list != null && list.size() == 1) {
-
-            CodeGenExceptionDefine codeGenExceptionDefine = ((StringModel)list.get(0)).getWrappedObject().getClass().getAnnotation(CodeGenExceptionDefine.class);
-
-            if(codeGenExceptionDefine != null) {
-                return codeGenExceptionDefine.desc();
-            } else {
-                return "";
             }
 
         } else {

@@ -1,8 +1,11 @@
 package com.jtool.codegenbuilderplugin.model;
 
 public class LogicInfo {
+    //备注的内容
     private String info;
+    //所在备注的文件名
     private String fileName;
+    //所在行数
     private Integer lineNum;
 
     public String getInfo() {

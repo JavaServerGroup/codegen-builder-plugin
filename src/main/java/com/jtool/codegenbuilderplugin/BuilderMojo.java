@@ -105,16 +105,16 @@ public class BuilderMojo extends AbstractMojo {
         List<Method> methodLists = MethodFinder.findAllCodeGenApiMethod(this, files);
 
         //遍历method集合，解析出可用的apiModel对象集合
-        List<CodeGenModel> apiModelList = MethodParser.parseMethodToCodeGenModel(this, methodLists);
+        List<CodeGenModel> codeGenModelList = MethodParser.parseMethodToCodeGenModel(this, methodLists);
 
-        this.getLog().debug(JSON.toJSONString(apiModelList));
+        this.getLog().debug(JSON.toJSONString(codeGenModelList));
 
         //生成html格式的文档。
-        HtmlGenerator.genHtmlDoc(this, apiModelList, logicInfoList);
+        HtmlGenerator.genHtmlDoc(this, codeGenModelList, logicInfoList);
 
         //生成pojo
         try {
-            PojoGenerator.genPojo(this, apiModelList);
+            PojoGenerator.genPojo(this, codeGenModelList);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -122,7 +122,7 @@ public class BuilderMojo extends AbstractMojo {
         //生成api
         try {
             if(!this.skipGenAndroidSDK) {
-                ApiGenerator.genApi(this, apiModelList);
+                ApiGenerator.genApi(this, codeGenModelList);
             }
         } catch (IOException e) {
             e.printStackTrace();

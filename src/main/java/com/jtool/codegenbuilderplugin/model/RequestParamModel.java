@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 public class RequestParamModel extends ParamModel {
-	
+
 	private List<Annotation> constraint;
 
 	public List<Annotation> getConstraint() {

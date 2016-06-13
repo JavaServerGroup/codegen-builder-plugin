@@ -38,7 +38,7 @@ public class DemoController {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	@CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户")
+	@CodeGenApi(name = "查找用户", description = "根据用户国家，年纪，身高，是否结婚等条件过滤查找用户", genSDK = true)
 	@CodeGenRequest(SearchUserApiRequest.class)
 	@CodeGenResponse(SearchUserApiResponse.class)
 	@ResponseBody
@@ -113,7 +113,7 @@ public class DemoController {
 		return JSON.toJSONString(uploadAvatarResponse);
 	}
 
-	@CodeGenApi(name = "获取信息", description = "无参数请求获取信息")
+	@CodeGenApi(name = "获取信息", description = "无参数请求获取信息", forWho = "client")
 	@CodeGenResponse(SearchUserApiResponse.class)
 	@ResponseBody
 	@RequestMapping(value = "/getUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

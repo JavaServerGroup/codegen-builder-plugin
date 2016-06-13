@@ -22,8 +22,10 @@ public class LogicInfoParser {
 
                 List<LogicInfo> logicInfoList = new ArrayList<>();
 
+                //读出文件内容
                 String content = FileUtils.readFileToString(file);
-                System.out.println(content);
+
+                //把<logicInfo></logicInfo>之间的内容用正则表达式提取出来
                 Pattern pattern = Pattern.compile("<logicInfo>(.+?)</logicInfo>", Pattern.DOTALL);
                 Matcher matcher = pattern.matcher(content);
 
@@ -35,6 +37,7 @@ public class LogicInfoParser {
                     logicInfoList.add(logicInfo);
                 }
 
+                //把出现的第几行纪录下来
                 int listIndex = 0;
                 int lineIndex = 1;
 

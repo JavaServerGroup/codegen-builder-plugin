@@ -3,6 +3,7 @@ package com.jtool.codegenbuilderplugin.parser;
 import com.jtool.codegenannotation.*;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
+import com.jtool.codegenbuilderplugin.model.ErrorInfo;
 import com.jtool.codegenbuilderplugin.model.RequestParamModel;
 import com.jtool.codegenbuilderplugin.model.ResponseParamModel;
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -40,12 +41,19 @@ public class MethodParser {
 
     private static CodeGenModel parse(BuilderMojo builderMojo, Method method) {
         CodeGenModel codeGenModel = new CodeGenModel();
+        //分析排序的序号
         codeGenModel.setDocSeq(paresDocSeq(method));
+        //分析api的名字
         codeGenModel.setApiName(paresApiName(method));
+        //分析主机host的值,表示api会放在那个机器的主机上
         codeGenModel.setHost(paresHost(builderMojo, method));
+        //分析说明
         codeGenModel.setDescription(paresDescription(method));
+        //分析http的方法:GET或者POST
         codeGenModel.setHttpMethod(paresHttpMethod(method));
+        //分析备注内容
         codeGenModel.setRemark(paresRemark(method));
+        //分析API的路径值
         codeGenModel.setUrl(paresUrl(method));
         //分析方法错误返回，就是分析自定义Exception
         codeGenModel.setErrorType(paresErrorType(method));
@@ -55,14 +63,17 @@ public class MethodParser {
         codeGenModel.setResponseParamModelList(parseResponseParamModelList(builderMojo, method));
         //分析是否弃用的方法
         codeGenModel.setIsDeprecated(parseIsDeprecated(method));
+        //分析接口是给谁用的
         codeGenModel.setForWho(parseForWho(method));
-        //分析成功请求返回
-        codeGenModel.setSuccessReturn(parseSuccessReturn(builderMojo, method));
+        //分析成功请求返回的字符串
+        codeGenModel.setSuccessReturn(parseSuccessReturnString(builderMojo, method));
         //分析获得请求pojo的名字
         codeGenModel.setRequestPojoName(parseRequestPojoName(method));
         //分析获得返回pojo的名字
         codeGenModel.setResponsePojoName(parseResponsePojoName(method));
+        //分析是否生成SDK
         codeGenModel.setIsGenSDK(parseIsGenSDK(method));
+        //分析这个方法的名称
         codeGenModel.setApiMethodName(parseApiMethodName(method));
         //分析获得curlExample
         codeGenModel.setCurlExample(parseCurlExample(codeGenModel));
@@ -137,7 +148,7 @@ public class MethodParser {
         return method.getName();
     }
 
-    private static Object parseSuccessReturn(BuilderMojo builderMojo, Method method) {
+    private static Object parseSuccessReturnString(BuilderMojo builderMojo, Method method) {
 
         CodeGenResponse codeGenResponse = method.getAnnotation(CodeGenResponse.class);
         if(codeGenResponse == null) {
@@ -177,10 +188,16 @@ public class MethodParser {
                 field.set(obj, 0);
             } else if(field.getType().equals(Float.class) || field.getType().equals(Double.class)){
                 field.set(obj, 0.0);
-            } else if (field.getType().equals(List.class)) {
+            } else if (field.getType().equals(List.class) || field.getType().equals(Set.class)) {
 
                 //生成一个list
-                List<Object> list = new ArrayList<>();
+                Collection<Object> collection;
+
+                if(field.getType().equals(List.class)) {
+                    collection = new ArrayList<>();
+                } else {
+                    collection = new HashSet<>();
+                }
 
                 Type fc = field.getGenericType();
 
@@ -195,67 +212,27 @@ public class MethodParser {
                     //List里面的泛型参数
                     switch (className) {
                         case "java.lang.String" :
-                            list.add("string");
+                            collection.add("string");
                             break;
                         case "java.lang.Boolean" :
-                            list.add(false);
+                            collection.add(false);
                             break;
                         case "java.lang.Short" :
                         case "java.lang.Integer" :
                         case "java.lang.Long" :
-                            list.add(0);
+                            collection.add(0);
                             break;
                         case "java.lang.Float" :
                         case "java.lang.Double" :
-                            list.add(0);
+                            collection.add(0);
                             break;
                         default:
-                            list.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className))));
+                            collection.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className))));
                     }
                 }
 
                 //设置值到list
-                field.set(obj, list);
-
-            } else if (field.getType().equals(Set.class)) {
-
-                //生成一个set
-                Set<Object> set = new HashSet<>();
-
-                Type fc = field.getGenericType();
-
-                if (fc == null) {
-                    continue;
-                }
-
-                if (fc instanceof ParameterizedType) {
-                    ParameterizedType pt = (ParameterizedType) fc;
-                    String className = pt.getActualTypeArguments()[0].getTypeName();
-
-                    //List里面的泛型参数
-                    switch (className) {
-                        case "java.lang.String" :
-                            set.add("string");
-                            break;
-                        case "java.lang.Boolean" :
-                            set.add(false);
-                            break;
-                        case "java.lang.Short" :
-                        case "java.lang.Integer" :
-                        case "java.lang.Long" :
-                            set.add(0);
-                            break;
-                        case "java.lang.Float" :
-                        case "java.lang.Double" :
-                            set.add(0);
-                            break;
-                        default:
-                            set.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className))));
-                    }
-                }
-
-                //设置值到list
-                field.set(obj, set);
+                field.set(obj, collection);
 
             } else if(!field.getType().isPrimitive()) {
                 field.set(obj, genParamJsonObj(builderMojo, field.getType()));
@@ -326,8 +303,8 @@ public class MethodParser {
                 result.add(responseParamModel);
 
                 if(!field.getType().isPrimitive()) {
-                    if (field.getType().equals(List.class)) {
-                        // 如果是List集合
+                    if (field.getType().equals(List.class)) {//如果是List集合,就得分析List泛型的类型
+
                         Type type = field.getGenericType();
 
                         if (type == null) {
@@ -347,12 +324,16 @@ public class MethodParser {
                                 throw new RuntimeException("找不到类：" + pt.getActualTypeArguments()[0].getTypeName());
                             }
                         }
+                    } else if(field.getType().equals(Map.class)) {
+                        throw new RuntimeException("不应该使用Map, 请使用pojo");
                     } else {
                         // 如果是普通的类
                         List<ResponseParamModel> responseParamModelList = parseResponseParamModel(builderMojo, field.getType());
                         Collections.sort(responseParamModelList);
                         responseParamModel.setSubResponseParamModel(responseParamModelList);
                     }
+                } else {
+                    throw new RuntimeException("不应该使用简单类型");
                 }
             }
         }
@@ -440,45 +421,26 @@ public class MethodParser {
             if (result.equals("")) {
                 result += url;
             } else {
-                result += "," + url;
+                result += ", " + url;
             }
         }
         return result;
     }
 
-    private static List<Exception> paresErrorType(Method method) {
+    private static List<ErrorInfo> paresErrorType(Method method) {
 
-        List<Exception> resultException = new ArrayList<>();
+        List<ErrorInfo> resultException = new ArrayList<>();
 
         Class<?>[] exceptionTypes = method.getExceptionTypes();
 
         //扫描方法抛出的异常，其中包含@CodeGenExceptionDefine注解的
         for(Class exceptionType : exceptionTypes) {
-            if(exceptionType.getAnnotation(CodeGenExceptionDefine.class) != null){
-                try {
-                    resultException.add((Exception)exceptionType.newInstance());
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("实例化对象失败,请添加不带参数的构造函数以便生成成功.");
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        //扫描方法@CodeGenException注解定义的异常
-        CodeGenException docException = method.getAnnotation(CodeGenException.class);
-        if (docException != null) {
-            // 得到该方法所有异常的Class字节码
-            for (Class clazz : docException.value()) {
-                try {
-                    resultException.add((Exception)clazz.newInstance());
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("实例化对象失败,请添加不带参数的构造函数以便生成成功.");
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+            CodeGenExceptionDefine codeGenExceptionDefine = (CodeGenExceptionDefine) exceptionType.getAnnotation(CodeGenExceptionDefine.class);
+            if(codeGenExceptionDefine != null){
+                ErrorInfo errorInfo = new ErrorInfo();
+                errorInfo.setErrorCode(codeGenExceptionDefine.code());
+                errorInfo.setErrorDesc(codeGenExceptionDefine.desc());
+                resultException.add(errorInfo);
             }
         }
 

@@ -23,6 +23,7 @@ public class FileFinder {
         return findAllFileNeedToParse(scanBasePackageFile);
     }
 
+    //递归找出所有需要分析的文件(.java结尾的文件)
     private static List<File> findAllFileNeedToParse(File file) {
 
         List<File> result = new ArrayList<>();
@@ -53,6 +54,7 @@ public class FileFinder {
         return scanBasePackageFile;
     }
 
+    //将包名转化为路径
     private static String makePackagePath(String packageName) {
         String result = "";
         for (String str : packageName.split("\\.")) {

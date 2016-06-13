@@ -375,8 +375,8 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
                   </tr>
                   <#list apiModelItem.errorType as errorTypeItem>
                     <tr>
-                      <td>${errorTypeCode(errorTypeItem)}</td>
-                      <td>${errorTypeDesc(errorTypeItem)}</td>
+                      <td>${errorTypeItem.errorCode}</td>
+                      <td>${errorTypeItem.errorDesc}</td>
                     </tr>
                   </#list>
                 </table>

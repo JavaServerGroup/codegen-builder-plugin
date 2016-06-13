@@ -41,7 +41,7 @@ public class MethodFinder {
             throw new RuntimeException("没有找到类:" + className);
         }
 
-        //遍历源文件的方法
+        //遍历源文件的method
         for (Method method : clazz.getDeclaredMethods()) {
             for (Annotation annotation : method.getAnnotations()) {
                 // 只保留有@CodeGenApi注解的方法

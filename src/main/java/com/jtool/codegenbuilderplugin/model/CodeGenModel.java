@@ -17,7 +17,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 	private List<RequestParamModel> requestParamModelList;
 	private List<ResponseParamModel> responseParamModelList;
 	private String responseDIY;
-	private List<Exception> errorType;
+	private List<ErrorInfo> errorType;
 	private String curlExample;
 
 	private Object successReturn;
@@ -111,11 +111,11 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.requestParamModelList = requestParamModelList;
 	}
 
-	public List<Exception> getErrorType() {
+	public List<ErrorInfo> getErrorType() {
 		return errorType;
 	}
 
-	public void setErrorType(List<Exception> errorType) {
+	public void setErrorType(List<ErrorInfo> errorType) {
 		this.errorType = errorType;
 	}
 
