@@ -384,29 +384,31 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
                 </td>
               </tr>
             </#if>
-            <tr>
-              <td>错误返回:</td>
-              <td class="danger">
-                <pre>{"code":"err_code"}</pre>
-              </td>
-            </tr>
-            <tr>
+            <#if (apiModelItem.errorType?size>0) >
+              <tr>
+                <td>错误返回:</td>
+                <td class="danger">
+                  <pre>{"code":"err_code"}</pre>
+                </td>
+              </tr>
+              <tr>
               <td>错误返回说明:</td>
-              <td>
-                <table class="table table-striped table-condensed">
-                  <tr>
-                    <th>数值</th>
-                    <th>说明</th>
-                  </tr>
-                  <#list apiModelItem.errorType as errorTypeItem>
+                <td>
+                  <table class="table table-striped table-condensed">
                     <tr>
-                      <td>${errorTypeItem.errorCode}</td>
-                      <td>${errorTypeItem.errorDesc}</td>
+                      <th>数值</th>
+                      <th>说明</th>
                     </tr>
-                  </#list>
-                </table>
-              </td>
-            </tr>
+                    <#list apiModelItem.errorType as errorTypeItem>
+                      <tr>
+                        <td>${errorTypeItem.errorCode}</td>
+                        <td>${errorTypeItem.errorDesc}</td>
+                      </tr>
+                    </#list>
+                    </table>
+                </td>
+              </tr>
+            </#if>
             <#if (apiModelItem.responseParamModelList?size>0) >
               <tr>
                 <td>正确返回:</td>
