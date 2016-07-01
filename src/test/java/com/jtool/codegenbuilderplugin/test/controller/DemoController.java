@@ -137,14 +137,9 @@ public class DemoController {
 	@CodeGenApi(name = "/order/querySingle/", description = "创建订单")
 	@CodeGenRequest(QuerySingleRequest.class)
 	@CodeGenResponse(QuerySingleResponse.class)
-	@RequestMapping(value = "/order/querySingle/", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	@RequestMapping(value = "/{order}/querySingle/{myId}", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	public @ResponseBody QuerySingleResponse querySingle(QuerySingleRequest querySingleRequest){
 		return null;
-	}
-
-	public static void main(String[] args) throws IllegalAccessException, InstantiationException {
-		Class classz = OrderDetail.class;
-		Object obj = classz.newInstance();
 	}
 
 }

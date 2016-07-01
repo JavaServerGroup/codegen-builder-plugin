@@ -2,10 +2,7 @@ package com.jtool.codegenbuilderplugin.parser;
 
 import com.jtool.codegenannotation.*;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
-import com.jtool.codegenbuilderplugin.model.CodeGenModel;
-import com.jtool.codegenbuilderplugin.model.ErrorInfo;
-import com.jtool.codegenbuilderplugin.model.RequestParamModel;
-import com.jtool.codegenbuilderplugin.model.ResponseParamModel;
+import com.jtool.codegenbuilderplugin.model.*;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +14,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MethodParser {
 
@@ -40,41 +39,68 @@ public class MethodParser {
 
 
     private static CodeGenModel parse(BuilderMojo builderMojo, Method method) {
+
         CodeGenModel codeGenModel = new CodeGenModel();
+
         //分析排序的序号
         codeGenModel.setDocSeq(paresDocSeq(method));
+
         //分析api的名字
         codeGenModel.setApiName(paresApiName(method));
+
         //分析主机host的值,表示api会放在那个机器的主机上
         codeGenModel.setHost(paresHost(builderMojo, method));
+
         //分析说明
         codeGenModel.setDescription(paresDescription(method));
+
         //分析http的方法:GET或者POST
         codeGenModel.setHttpMethod(paresHttpMethod(method));
+
         //分析备注内容
         codeGenModel.setRemark(paresRemark(method));
+
         //分析API的路径值
         codeGenModel.setUrl(paresUrl(method));
+
         //分析方法错误返回，就是分析自定义Exception
         codeGenModel.setErrorType(paresErrorType(method));
+
+        List<RequestParamModel> requestParamModelList = new ArrayList<>();
+        List<PathParamModel> pathParamModelList = new ArrayList<>();
+
+        parseParam(method, requestParamModelList, pathParamModelList, codeGenModel.getUrl());
+
         //分析request的pojo的参数列表
-        codeGenModel.setRequestParamModelList(paresRequestParamModelList(method));
+        codeGenModel.setRequestParamModelList(requestParamModelList);
+
+        //分析path param的参数列表
+        codeGenModel.setPathParamModelList(pathParamModelList);
+
         //分析response的pojo的参数列表
         codeGenModel.setResponseParamModelList(parseResponseParamModelList(builderMojo, method));
+
         //分析是否弃用的方法
         codeGenModel.setIsDeprecated(parseIsDeprecated(method));
+
         //分析接口是给谁用的
         codeGenModel.setForWho(parseForWho(method));
+
         //分析成功请求返回的字符串
         codeGenModel.setSuccessReturn(parseSuccessReturnString(builderMojo, method));
+
         //分析获得请求pojo的名字
         codeGenModel.setRequestPojoName(parseRequestPojoName(method));
+
         //分析获得返回pojo的名字
         codeGenModel.setResponsePojoName(parseResponsePojoName(method));
+
         //分析是否生成SDK
         codeGenModel.setIsGenSDK(parseIsGenSDK(method));
+
         //分析这个方法的名称
         codeGenModel.setApiMethodName(parseApiMethodName(method));
+
         //分析获得curlExample
         codeGenModel.setCurlExample(parseCurlExample(codeGenModel));
 
@@ -244,7 +270,54 @@ public class MethodParser {
         return obj;
     }
 
-    private static List<RequestParamModel> paresRequestParamModelList(Method method) {
+
+    private static void parseParam(Method method, List<RequestParamModel> requestParamModelList, List<PathParamModel> pathParamModelList, String url) {
+
+        CodeGenRequest codeGenRequest = method.getAnnotation(CodeGenRequest.class);
+        if (codeGenRequest != null) {
+
+            List<String> pathParamList =  new ArrayList<>();
+            Pattern pattern = Pattern.compile("\\{(.+?)\\}");
+            Matcher matcher = pattern.matcher(url);
+
+            while (matcher.find()){
+                pathParamList.add(matcher.group(1));
+            }
+
+            for(Field field : codeGenRequest.value().getDeclaredFields()) {
+
+                //遍历请求pojo的带有@CodeGenField注解的变量
+                CodeGenField codeGenField = field.getAnnotation(CodeGenField.class);
+
+                if(codeGenField != null) {
+                    if(pathParamList.contains(field.getName())) {
+                        PathParamModel pathParamModel = new PathParamModel();
+                        pathParamModel.setKey(field.getName());
+                        pathParamModel.setRequired(paresFieldIsRequired(field));
+                        pathParamModel.setComment(codeGenField.value());
+                        //分析请求的约束
+                        pathParamModel.setConstraint(Arrays.asList(field.getAnnotations()));
+                        pathParamModel.setType(field.getType().getName());
+
+                        pathParamModelList.add(pathParamModel);
+                    } else {
+                        RequestParamModel requestParamModel = new RequestParamModel();
+                        requestParamModel.setKey(field.getName());
+                        requestParamModel.setRequired(paresFieldIsRequired(field));
+                        requestParamModel.setComment(codeGenField.value());
+                        //分析请求的约束
+                        requestParamModel.setConstraint(Arrays.asList(field.getAnnotations()));
+                        requestParamModel.setType(field.getType().getName());
+
+                        requestParamModelList.add(requestParamModel);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private static List<RequestParamModel> paresRequestParamModelList(Method method, List<String> pathParamList) {
 
         List<RequestParamModel> result = new ArrayList<>();
 
@@ -256,7 +329,7 @@ public class MethodParser {
                 //遍历请求pojo的带有@CodeGenField注解的变量
                 CodeGenField codeGenField = field.getAnnotation(CodeGenField.class);
 
-                if(codeGenField != null) {
+                if(codeGenField != null && !pathParamList.contains(field.getName())) {
                     RequestParamModel requestParamModel = new RequestParamModel();
                     requestParamModel.setKey(field.getName());
                     requestParamModel.setRequired(paresFieldIsRequired(field));

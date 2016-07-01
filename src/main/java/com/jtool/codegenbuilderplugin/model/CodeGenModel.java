@@ -15,6 +15,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 	private String requestPojoName;
 	private String responsePojoName;
 	private List<RequestParamModel> requestParamModelList;
+	private List<PathParamModel> pathParamModelList;
 	private List<ResponseParamModel> responseParamModelList;
 	private String responseDIY;
 	private List<ErrorInfo> errorType;
@@ -183,6 +184,14 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.curlExample = curlExample;
 	}
 
+	public List<PathParamModel> getPathParamModelList() {
+		return pathParamModelList;
+	}
+
+	public void setPathParamModelList(List<PathParamModel> pathParamModelList) {
+		this.pathParamModelList = pathParamModelList;
+	}
+
 	@Override
 	public String toString() {
 		return "CodeGenModel{" +
@@ -197,6 +206,7 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 				", requestPojoName='" + requestPojoName + '\'' +
 				", responsePojoName='" + responsePojoName + '\'' +
 				", requestParamModelList=" + requestParamModelList +
+				", pathParamModelList=" + pathParamModelList +
 				", responseParamModelList=" + responseParamModelList +
 				", responseDIY='" + responseDIY + '\'' +
 				", errorType=" + errorType +
