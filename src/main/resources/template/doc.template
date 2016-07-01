@@ -106,10 +106,10 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
       */
 
       .main {
-        font-size: 8px;
+        font-size: 10px;
       }
       .main pre {
-        font-size: 8px;
+        font-size: 10px;
       }
       @media (min-width: 768px) {
       .main {

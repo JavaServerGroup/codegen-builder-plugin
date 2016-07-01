@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.jtool.codegenannotation.CodeGenApi;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
+import com.jtool.codegenbuilderplugin.test.api.request.QuerySingleRequest;
 import com.jtool.codegenbuilderplugin.test.api.request.SearchUserApiRequest;
 import com.jtool.codegenbuilderplugin.test.api.request.UploadAvatarApiRequest;
-import com.jtool.codegenbuilderplugin.test.api.response.Pages;
-import com.jtool.codegenbuilderplugin.test.api.response.SearchUserApiResponse;
-import com.jtool.codegenbuilderplugin.test.api.response.UploadAvatarApiResponse;
-import com.jtool.codegenbuilderplugin.test.api.response.User;
+import com.jtool.codegenbuilderplugin.test.api.response.*;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
 import com.jtool.validator.ParamBeanValidator;
@@ -134,6 +132,19 @@ public class DemoController {
 		searchUserApiResponse.setCode("0");
 
 		return JSON.toJSONString(searchUserApiResponse);
+	}
+
+	@CodeGenApi(name = "/order/querySingle/", description = "创建订单")
+	@CodeGenRequest(QuerySingleRequest.class)
+	@CodeGenResponse(QuerySingleResponse.class)
+	@RequestMapping(value = "/order/querySingle/", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	public @ResponseBody QuerySingleResponse querySingle(QuerySingleRequest querySingleRequest){
+		return null;
+	}
+
+	public static void main(String[] args) throws IllegalAccessException, InstantiationException {
+		Class classz = OrderDetail.class;
+		Object obj = classz.newInstance();
 	}
 
 }

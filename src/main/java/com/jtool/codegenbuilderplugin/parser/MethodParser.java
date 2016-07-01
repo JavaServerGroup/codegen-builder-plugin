@@ -188,6 +188,8 @@ public class MethodParser {
                 field.set(obj, 0);
             } else if(field.getType().equals(Float.class) || field.getType().equals(Double.class)){
                 field.set(obj, 0.0);
+            } else if(field.getType().equals(Date.class)) {
+                field.set(obj, new Date());
             } else if (field.getType().equals(List.class) || field.getType().equals(Set.class)) {
 
                 //生成一个list
