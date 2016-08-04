@@ -211,10 +211,16 @@ public class MethodParser {
                 field.set(obj, field.getName());
             } else if(field.getType().equals(Boolean.class)){
                 field.set(obj, false);
-            } else if(field.getType().equals(Short.class) || field.getType().equals(Integer.class) || field.getType().equals(Long.class)){
-                field.set(obj, 0);
-            } else if(field.getType().equals(Float.class) || field.getType().equals(Double.class)){
-                field.set(obj, 0.0);
+            } else if(field.getType().equals(Short.class)) {
+                field.set(obj, 1);
+            } else if(field.getType().equals(Integer.class)) {
+                field.set(obj, 1);
+            } else if(field.getType().equals(Long.class)) {
+                field.set(obj, 1L);
+            } else if(field.getType().equals(Float.class)){
+                field.set(obj, 0.0f);
+            }  else if (field.getType().equals(Double.class)){
+                field.set(obj, 0.0d);
             } else if(field.getType().equals(Date.class)) {
                 field.set(obj, new Date());
             } else if (field.getType().equals(List.class) || field.getType().equals(Set.class)) {
