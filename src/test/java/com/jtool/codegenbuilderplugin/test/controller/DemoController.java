@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jtool.codegenannotation.CodeGenApi;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
+import com.jtool.codegenbuilderplugin.test.api.request.PrePaymentRequest;
 import com.jtool.codegenbuilderplugin.test.api.request.QuerySingleRequest;
 import com.jtool.codegenbuilderplugin.test.api.request.SearchUserApiRequest;
 import com.jtool.codegenbuilderplugin.test.api.request.UploadAvatarApiRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -139,6 +141,13 @@ public class DemoController {
 	@CodeGenResponse(QuerySingleResponse.class)
 	@RequestMapping(value = "/{order}/querySingle/{myId}", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	public @ResponseBody QuerySingleResponse querySingle(QuerySingleRequest querySingleRequest){
+		return null;
+	}
+
+	@RequestMapping(value = "/{currency}/pay/pre", method = {RequestMethod.POST, RequestMethod.GET}, produces = "application/json;charset=utf-8")
+	@CodeGenApi(name = "预支付", description = "提交支付信息,生成定单,并显示确认页面")
+	@CodeGenRequest(PrePaymentRequest.class)
+	public String paymentPre(HttpServletRequest request, PrePaymentRequest preRequest) throws Exception {
 		return null;
 	}
 

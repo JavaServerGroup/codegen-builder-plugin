@@ -116,7 +116,7 @@ public class MethodParser {
 
         List<RequestParamModel> requestParamModelList = codeGenModel.getRequestParamModelList();
 
-        if("GET".equals(httpMethod)) {
+        if(httpMethod != null && httpMethod.contains("GET")) {
 
             String queryString = "";
 
@@ -134,9 +134,10 @@ public class MethodParser {
                 result += "?" + queryString;
             }
 
-            result += "\"";
+            result += "\"<br/>";
+        }
 
-        } else if("POST".equals(httpMethod)) {
+        if(httpMethod != null && httpMethod.contains("POST")) {
 
             if(isPostFile(requestParamModelList)) {
                 String queryString = "";
@@ -145,7 +146,7 @@ public class MethodParser {
                     queryString += " -F \"" + requestParamModel.getKey() + "=" +  "\" ";
                 }
 
-                result = "curl -X POST " + queryString + " \"http://host:port" + uri + "\"";
+                result += "curl -X POST " + queryString + " \"http://host:port" + uri + "\"";
             } else {
                 String queryString = "";
 
@@ -153,7 +154,7 @@ public class MethodParser {
                     queryString += " --data-urlencode \"" + requestParamModel.getKey() + "=" +  "\" ";
                 }
 
-                result = "curl -X POST " + queryString + " \"http://host:port" + uri + "\"";
+                result += "curl -X POST " + queryString + " \"http://host:port" + uri + "\"";
             }
         }
 
