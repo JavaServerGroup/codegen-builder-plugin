@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jtool.codegenannotation.*;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.*;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -153,7 +154,7 @@ public class MethodParser {
 
         Object obj = clazz.newInstance();
 
-        for (Field field : clazz.getDeclaredFields()) {
+        for (Field field : FieldUtils.getAllFieldsList(clazz)) {
 
             field.setAccessible(true);
 
@@ -256,7 +257,7 @@ public class MethodParser {
 
         List<ParamModel> result = new ArrayList<>();
 
-        for(Field field : clazz.getDeclaredFields()) {
+        for(Field field : FieldUtils.getAllFieldsList(clazz)) {
 
             //遍历返回pojo的带有@CodeGenField注解的变量
             CodeGenField codeGenField = field.getAnnotation(CodeGenField.class);

@@ -7,17 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-public class CheckSdkPluginsRequest {
-
-    @CodeGenField("sim卡唯一标示，没有请上传999999999999999，15个9")
-    @NotNull
-    @Size(min = 15, max = 16)
-    private String imsi;
-
-    @CodeGenField("设备唯一标示")
-    @NotNull
-    @Size(min = 15, max = 16)
-    private String imei;
+public class CheckSdkPluginsRequest extends BaseCheckSdkPluginsRequest {
 
     @CodeGenField("渠道")
     @NotNull
