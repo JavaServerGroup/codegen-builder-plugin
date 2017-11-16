@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jtool.codegenannotation.CodeGenApi;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
-import com.jtool.codegenbuilderplugin.test.api.request.PrePaymentRequest;
-import com.jtool.codegenbuilderplugin.test.api.request.QuerySingleRequest;
-import com.jtool.codegenbuilderplugin.test.api.request.SearchUserApiRequest;
-import com.jtool.codegenbuilderplugin.test.api.request.UploadAvatarApiRequest;
+import com.jtool.codegenbuilderplugin.test.api.request.*;
 import com.jtool.codegenbuilderplugin.test.api.response.*;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
@@ -15,6 +12,7 @@ import com.jtool.validator.ParamBeanValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -148,6 +146,25 @@ public class DemoController {
 	@CodeGenApi(name = "预支付", description = "提交支付信息,生成定单,并显示确认页面")
 	@CodeGenRequest(PrePaymentRequest.class)
 	public String paymentPre(HttpServletRequest request, PrePaymentRequest preRequest) throws Exception {
+		return null;
+	}
+
+
+	@CodeGenApi(name = "添加广告", description = "添加不同的广告")
+	@CodeGenRequest(value = AppFullAd.class, isRest = true)
+	@CodeGenResponse(CommonResponse.class)
+	@ResponseBody
+	@RequestMapping(value = "/subClass", method = {RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+	public String subClass(@RequestBody String requestBodyStr) throws ParamException, BackEndException, IOException {
+		return null;
+	}
+
+	@CodeGenApi(name="检查插件", description = "检查插件是否需要更新")
+	@CodeGenRequest(value = CheckSdkPluginsRequest.class, isRest = true)
+	@CodeGenResponse(CheckSdkPluginsResponse.class)
+	@RequestMapping(value = "/checkSdkPlugins", method = RequestMethod.POST)
+	public String checkSdkPlugins() {
+
 		return null;
 	}
 

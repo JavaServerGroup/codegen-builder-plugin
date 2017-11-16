@@ -26,7 +26,7 @@ public class PrePaymentRequest {
     private String amount;
 
     @NotNull
-    @CodeGenField("币种")
+    @CodeGenField(value = "币种", isPathParam = true)
     private String currency;
 
     @NotNull
@@ -38,16 +38,7 @@ public class PrePaymentRequest {
     private String tradeNo;
 
     @NotNull
-    @CodeGenField("支付说明,主要用于页面显示,json格式如:{\n" +
-            "    \"0\": {\n" +
-            "        \"key\": \"item\",\n" +
-            "        \"value\": \"Recharge 100 PCoin\"\n" +
-            "    },\n" +
-            "    \"1\": {\n" +
-            "        \"key\": \"palyId\",\n" +
-            "        \"value\": \"123456\"\n" +
-            "    }\n" +
-            "}")
+    @CodeGenField("支付说明,主要用于页面显示")
     private String productDesc;
 
     @NotNull

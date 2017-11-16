@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class QuerySingleRequest {
 
     @NotNull
-    @CodeGenField("定单id")
+    @CodeGenField(value = "定单id", isPathParam = true)
     private String orderId;
 
     @NotNull
@@ -18,7 +18,7 @@ public class QuerySingleRequest {
     private String accountId;
 
     @NotNull
-    @CodeGenField("我的Id")
+    @CodeGenField(value = "我的Id", isPathParam = true)
     private String myId;
 
     @NotNull

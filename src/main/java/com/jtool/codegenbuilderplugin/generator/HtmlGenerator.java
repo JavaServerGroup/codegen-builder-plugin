@@ -6,7 +6,7 @@ import com.jtool.annotation.AvailableValues;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.LogicInfo;
-import com.jtool.codegenbuilderplugin.model.ResponseParamModel;
+import com.jtool.codegenbuilderplugin.model.ParamModel;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.*;
 import org.apache.commons.io.FileUtils;
@@ -128,46 +128,7 @@ class HtmlConstraintGenerator implements TemplateMethodModelEx {
                 for (int i = 0; i < defaultListAdapter.size(); i++) {
                     Object obj = ((StringModel) defaultListAdapter.get(i)).getWrappedObject();
 
-                    if (obj instanceof ObjectUtils.Null) {
-                        result += "<div>必须为null</div>";
-                    } else if (obj instanceof AssertTrue) {
-                        result += "<div>必须为True</div>";
-                    } else if (obj instanceof AssertFalse) {
-                        result += "<div>必须为False</div>";
-                    } else if (obj instanceof Digits) {
-                        Digits digits = (Digits) obj;
-                        if (digits.fraction() == 0) {
-                            result += "<div>必须为一个整型数字</div>";
-                        } else if (digits.fraction() > 0) {
-                            result += "<div>必须为一个" + digits.fraction() + "位小数</div>";
-                        } else {
-                            throw new RuntimeException("Digits的fraction必须为一个非负数");
-                        }
-                    } else if (obj instanceof Min) {
-                        result += "<div>必须大于或等于" + ((Min) obj).value() + "</div>";
-                    } else if (obj instanceof DecimalMin) {
-                        result += "<div>必须大于或等于" + ((DecimalMin) obj).value() + "</div>";
-                    } else if (obj instanceof Max) {
-                        result += "<div>必须小于或等于" + ((Max) obj).value() + "</div>";
-                    } else if (obj instanceof DecimalMax) {
-                        result += "<div>必须小于或等于" + ((DecimalMax) obj).value() + "</div>";
-                    } else if (obj instanceof Size) {
-                        Size size = (Size) obj;
-                        result += "<div>长度边界[" + size.min() + " : " + size.max() + "]</div>";
-                    } else if (obj instanceof Past) {
-                        result += "<div>必须为过去的某个时间</div>";
-                    } else if (obj instanceof Future) {
-                        result += "<div>必须为将来的某个时间</div>";
-                    } else if (obj instanceof Pattern) {
-                        Pattern pattern = (Pattern) obj;
-                        result += "<div>必须匹配正则表达式:" + pattern.regexp() + "</div>";
-                    }
-                    //自定义限制注解
-                    else if(obj instanceof AvailableValues) {
-                        AvailableValues availableValues = (AvailableValues)obj;
-                        String[] values = availableValues.values();
-                        result += "<div>必须为以下可用值之一: <br/>[ \"" + StringUtils.join(values, "\", \"") + "\" ]</div>";
-                    }
+                    result += "<div>" + obj.toString() + "</div>";
                 }
 
                 if ("".equals(result)) {
@@ -194,7 +155,7 @@ class HtmlSuccessReturnJsonGenerator implements TemplateMethodModelEx {
 
         try {
             if (list != null && list.size() == 1) {
-                return JSON.toJSONString(((StringModel) list.get(0)).getWrappedObject(), SerializerFeature.PrettyFormat);
+                return list.get(0).toString();
             } else {
                 return " --- ";
             }
@@ -209,11 +170,11 @@ class HtmlSuccessReturnGenerator implements TemplateMethodModelEx {
 
     @Override
     public Object exec(List list) throws TemplateModelException {
-        ResponseParamModel responseParamModel = (ResponseParamModel)(((StringModel)list.get(0)).getWrappedObject());
+        ParamModel responseParamModel = (ParamModel)(((StringModel)list.get(0)).getWrappedObject());
         return generator(responseParamModel, 0);
     }
 
-    private String generator(ResponseParamModel responseParamModel, int level) {
+    private String generator(ParamModel responseParamModel, int level) {
         String result = "<tr>";
 
         result += "<td>";
@@ -233,9 +194,9 @@ class HtmlSuccessReturnGenerator implements TemplateMethodModelEx {
 
         result += "</tr>";
 
-        if(responseParamModel.getSubResponseParamModel() != null && responseParamModel.getSubResponseParamModel().size() > 0) {
+        if(responseParamModel.getSubParamModel() != null && responseParamModel.getSubParamModel().size() > 0) {
             level++;
-            for(ResponseParamModel subResponseParamModel : responseParamModel.getSubResponseParamModel()) {
+            for(ParamModel subResponseParamModel : responseParamModel.getSubParamModel()) {
                 result += generator(subResponseParamModel, level);
             }
         }

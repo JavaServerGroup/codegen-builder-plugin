@@ -325,10 +325,6 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
               <td>${apiModelItem.curlExample}</td>
             </tr>
             <tr>
-              <td>Host:</td>
-              <td>${apiModelItem.host}</td>
-            </tr>
-            <tr>
               <td>URI:</td>
               <td>${apiModelItem.url}</td>
             </tr>
@@ -336,30 +332,6 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
               <td>请求方法:</td>
               <td>${apiModelItem.httpMethod}</td>
             </tr>
-
-            <#if (apiModelItem.pathParamModelList?size>0) >
-                <tr>
-                  <td>路径参数:</td>
-                  <td>
-                    <table class="table table-striped table-condensed">
-                            <tr>
-                              <th width="15%">参数名</th>
-                              <th width="8%">必要参数</th>
-                              <th width="27%">限制</th>
-                              <th width="50%">说明</th>
-                            </tr>
-                            <#list apiModelItem.pathParamModelList as pathParamModelItem>
-                            <tr>
-                            <td>${pathParamModelItem.key}</td>
-                            <td><#if pathParamModelItem.required>必须<#else>可选</#if></td>
-                          <td>${constraint(pathParamModelItem.constraint)}</td>
-                          <td>${pathParamModelItem.comment}</td>
-                        </tr>
-                      </#list>
-                    </table>
-                  </td>
-                </tr>
-            </#if>
 
             <#if (apiModelItem.requestParamModelList?size>0) >
               <tr>
@@ -384,36 +356,11 @@ d.trigger("activate.bs.scrollspy")},b.prototype.clear=function(){a(this.selector
                 </td>
               </tr>
             </#if>
-            <#if (apiModelItem.errorType?size>0) >
-              <tr>
-                <td>错误返回:</td>
-                <td class="danger">
-                  <pre>{"code":"err_code"}</pre>
-                </td>
-              </tr>
-              <tr>
-              <td>错误返回说明:</td>
-                <td>
-                  <table class="table table-striped table-condensed">
-                    <tr>
-                      <th>数值</th>
-                      <th>说明</th>
-                    </tr>
-                    <#list apiModelItem.errorType as errorTypeItem>
-                      <tr>
-                        <td>${errorTypeItem.errorCode}</td>
-                        <td>${errorTypeItem.errorDesc}</td>
-                      </tr>
-                    </#list>
-                    </table>
-                </td>
-              </tr>
-            </#if>
             <#if (apiModelItem.responseParamModelList?size>0) >
               <tr>
                 <td>正确返回:</td>
                 <td class="success">
-                  <pre>${successReturnJson(apiModelItem.successReturn)}</pre>
+                  <pre>${successReturnJson(apiModelItem.successReturnJsonStr)}</pre>
                 </td>
               </tr>
               <tr>

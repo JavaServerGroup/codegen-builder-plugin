@@ -3,8 +3,6 @@ package com.jtool.codegenbuilderplugin.generator;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ParamModel;
-import com.jtool.codegenbuilderplugin.model.RequestParamModel;
-import com.jtool.codegenbuilderplugin.model.ResponseParamModel;
 import com.squareup.javapoet.*;
 
 import javax.lang.model.element.Modifier;
@@ -20,17 +18,17 @@ public class PojoGenerator {
     private static final String responsePackageName = "com.jtool.codegen.api.response";
 
     public static void genPojo(BuilderMojo builderMojo, List<CodeGenModel> apiModelList) throws IOException, ClassNotFoundException {
-        for (CodeGenModel codeGenModel : apiModelList) {
-            if(codeGenModel.isGenSDK()) {
-                //生成请求pojo
-                genRequestPojo(builderMojo, codeGenModel.getRequestPojoName(), codeGenModel.getRequestParamModelList());
-                //生成返回pojo
-                genResponsePojo(builderMojo, codeGenModel.getResponsePojoName(), codeGenModel.getResponseParamModelList());
-            }
-        }
+//        for (CodeGenModel codeGenModel : apiModelList) {
+//            if(codeGenModel.isGenSDK()) {
+//                //生成请求pojo
+//                genRequestPojo(builderMojo, codeGenModel.getRequestPojoName(), codeGenModel.getRequestParamModelList());
+//                //生成返回pojo
+//                genResponsePojo(builderMojo, codeGenModel.getResponsePojoName(), codeGenModel.getResponseParamModelList());
+//            }
+//        }
     }
 
-    private static void genRequestPojo(BuilderMojo builderMojo, String pojoName, List<RequestParamModel> requestParamModelList) throws ClassNotFoundException, IOException {
+    private static void genRequestPojo(BuilderMojo builderMojo, String pojoName, List<ParamModel> requestParamModelList) throws ClassNotFoundException, IOException {
 
         if(pojoName == null) {
             return;
@@ -41,7 +39,7 @@ public class PojoGenerator {
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(pojoName).addModifiers(Modifier.PUBLIC);
 
         //生成字段，get,set方法
-        for(RequestParamModel requestParamModel : requestParamModelList){
+        for(ParamModel requestParamModel : requestParamModelList){
             //根据java系统自有的类型生成字段，get, set方法
             genFieldAndGetSetMethodFromJavaSystemType(typeSpecBuilder, requestParamModel);
         }
@@ -126,7 +124,7 @@ public class PojoGenerator {
         return pojo;
     }
 
-    private static TypeSpec genResponsePojo(BuilderMojo builderMojo, String pojoName, List<ResponseParamModel> responseParamModelList) throws IOException, ClassNotFoundException {
+    private static TypeSpec genResponsePojo(BuilderMojo builderMojo, String pojoName, List<ParamModel> responseParamModelList) throws IOException, ClassNotFoundException {
 
         if(pojoName == null || "".equals(pojoName)) {
             return null;
@@ -135,7 +133,7 @@ public class PojoGenerator {
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(pojoName).addModifiers(Modifier.PUBLIC);
 
         //生成字段，get,set方法
-        for(ResponseParamModel responseParamModel : responseParamModelList) {
+        for(ParamModel responseParamModel : responseParamModelList) {
 
             String key = responseParamModel.getKey();
             String responseParamTypeString = responseParamModel.getType();
@@ -151,11 +149,11 @@ public class PojoGenerator {
                 String packageName;
                 String className;
 
-                if(responseParamModel.getSubResponseParamModel().size() > 0) {//参数具有子参数列表，判断是需要递归生成对象的
+                if(responseParamModel.getSubParamModel().size() > 0) {//参数具有子参数列表，判断是需要递归生成对象的
                     //获得泛型的对象名
                     String subPojoName = makePojoNameByType(responseParamTypeString);
                     //递归调用，生成子对象
-                    TypeSpec pojo = genResponsePojo(builderMojo, subPojoName, responseParamModel.getSubResponseParamModel());
+                    TypeSpec pojo = genResponsePojo(builderMojo, subPojoName, responseParamModel.getSubParamModel());
 
                     packageName = responsePackageName;
                     className = pojo.name;
@@ -173,7 +171,7 @@ public class PojoGenerator {
 
             } else {//生成自定义pojo
                 String subPojoName = makePojoNameByType(responseParamModel.getType());
-                TypeSpec pojo = genResponsePojo(builderMojo, subPojoName, responseParamModel.getSubResponseParamModel());
+                TypeSpec pojo = genResponsePojo(builderMojo, subPojoName, responseParamModel.getSubParamModel());
 
                 //生成自定义pojo字段，get, set方法
                 ClassName type = ClassName.get(responsePackageName, pojo.name);

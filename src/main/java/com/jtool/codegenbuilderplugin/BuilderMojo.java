@@ -3,12 +3,15 @@ package com.jtool.codegenbuilderplugin;
 import com.alibaba.fastjson.JSON;
 import com.jtool.codegenbuilderplugin.classLoader.ClassLoaderInterface;
 import com.jtool.codegenbuilderplugin.classLoader.MavenPluginContextClassLoader;
+import com.jtool.codegenbuilderplugin.finder.ExceptionFinder;
 import com.jtool.codegenbuilderplugin.finder.FileFinder;
 import com.jtool.codegenbuilderplugin.finder.MethodFinder;
 import com.jtool.codegenbuilderplugin.generator.ApiGenerator;
+import com.jtool.codegenbuilderplugin.generator.DocMdFormatGenerator;
 import com.jtool.codegenbuilderplugin.generator.HtmlGenerator;
 import com.jtool.codegenbuilderplugin.generator.PojoGenerator;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
+import com.jtool.codegenbuilderplugin.model.ExceptionModel;
 import com.jtool.codegenbuilderplugin.model.LogicInfo;
 import com.jtool.codegenbuilderplugin.parser.LogicInfoParser;
 import com.jtool.codegenbuilderplugin.parser.MethodParser;
@@ -50,9 +53,8 @@ public class BuilderMojo extends AbstractMojo {
 
     /**
      * @parameter
-     * @required
      */
-    private String projectName = "MyProject";
+    private String projectName = "CodeGenDoc";
 
     /**
      * @parameter expression="${project}"
@@ -104,8 +106,25 @@ public class BuilderMojo extends AbstractMojo {
         //遍历带有@CodeGenApi注解的方法
         List<Method> methodLists = MethodFinder.findAllCodeGenApiMethod(this, files);
 
+        //遍历所有定义的Exception
+        List<ExceptionModel> exceptionModels = ExceptionFinder.findAllCodeGenException(this, files);
+
+        //检查是否有一样错误码的异常
+        checkDuplicateExceptionCodeDefine(exceptionModels);
+
         //遍历method集合，解析出可用的apiModel对象集合
-        List<CodeGenModel> codeGenModelList = MethodParser.parseMethodToCodeGenModel(this, methodLists);
+        List<CodeGenModel> codeGenModelList = null;
+        try {
+            codeGenModelList = MethodParser.parseMethodToCodeGenModel(this, methodLists);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         this.getLog().debug(JSON.toJSONString(codeGenModelList));
 
@@ -113,22 +132,38 @@ public class BuilderMojo extends AbstractMojo {
         HtmlGenerator.genHtmlDoc(this, codeGenModelList, logicInfoList);
 
         //生成pojo
-        try {
-            PojoGenerator.genPojo(this, codeGenModelList);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            PojoGenerator.genPojo(this, codeGenModelList);
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
         //生成api
-        try {
-            if(!this.skipGenAndroidSDK) {
-                ApiGenerator.genApi(this, codeGenModelList);
+//        try {
+//            if(!this.skipGenAndroidSDK) {
+//                ApiGenerator.genApi(this, codeGenModelList);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            this.getLog().debug("生成api的时候发生错误");
+//            e.printStackTrace();
+//        }
+
+        //生成md文件
+        DocMdFormatGenerator.genMdDoc(this, codeGenModelList, logicInfoList, exceptionModels);
+    }
+
+    private void checkDuplicateExceptionCodeDefine(List<ExceptionModel> exceptionModels) {
+        if(exceptionModels.size() == 1) {
+            return;
+        }
+        for(int i = 0; i < exceptionModels.size(); i++) {
+            for(int j = i + 1; j < exceptionModels.size(); j++) {
+                if( exceptionModels.get(i).getCode().equals(exceptionModels.get(j).getCode())) {
+                    throw new RuntimeException("一个项目里面不应该定义两个异常是有相同错误码的");
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            this.getLog().debug("生成api的时候发生错误");
-            e.printStackTrace();
         }
     }
 

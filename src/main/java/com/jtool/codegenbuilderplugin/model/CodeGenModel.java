@@ -1,6 +1,9 @@
 package com.jtool.codegenbuilderplugin.model;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.List;
+import java.util.Optional;
 
 public class CodeGenModel implements Comparable<CodeGenModel> {
 
@@ -8,24 +11,39 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 	private String apiName;
 	private String apiMethodName;
 	private String description;
-	private String host;
 	private String url;
 	private String forWho;
 	private String httpMethod;
-	private String requestPojoName;
-	private String responsePojoName;
-	private List<RequestParamModel> requestParamModelList;
-	private List<PathParamModel> pathParamModelList;
-	private List<ResponseParamModel> responseParamModelList;
+	private List<ParamModel> requestParamModelList;
+	private List<ParamModel> responseParamModelList;
 	private String responseDIY;
-	private List<ErrorInfo> errorType;
 	private String curlExample;
+	private Optional<Class> requestClass;
+	private Optional<Class> responseClass;
 
-	private Object successReturn;
+	private String successReturnJsonStr;
 	private String remark;
 	private boolean isDeprecated;
 
 	private boolean isGenSDK;
+
+	private boolean isRest;
+
+	public boolean isRest() {
+		return isRest;
+	}
+
+	public void setRest(boolean rest) {
+		isRest = rest;
+	}
+
+	public Optional<Class> getRequestClass() {
+		return requestClass;
+	}
+
+	public void setRequestClass(Optional<Class> requestClass) {
+		this.requestClass = requestClass;
+	}
 
 	@Override
 	public int compareTo(CodeGenModel o) {
@@ -56,14 +74,6 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.description = description;
 	}
 
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
 	public String getUrl() {
 		return url;
 	}
@@ -80,12 +90,12 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.httpMethod = httpMethod;
 	}
 
-	public Object getSuccessReturn() {
-		return successReturn;
+	public String getSuccessReturnJsonStr() {
+		return successReturnJsonStr;
 	}
 
-	public void setSuccessReturn(Object successReturn) {
-		this.successReturn = successReturn;
+	public void setSuccessReturnJsonStr(String successReturnJsonStr) {
+		this.successReturnJsonStr = successReturnJsonStr;
 	}
 
 	public String getRemark() {
@@ -104,27 +114,19 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.isDeprecated = isDeprecated;
 	}
 
-	public List<RequestParamModel> getRequestParamModelList() {
+	public List<ParamModel> getRequestParamModelList() {
 		return requestParamModelList;
 	}
 
-	public void setRequestParamModelList(List<RequestParamModel> requestParamModelList) {
+	public void setRequestParamModelList(List<ParamModel> requestParamModelList) {
 		this.requestParamModelList = requestParamModelList;
 	}
 
-	public List<ErrorInfo> getErrorType() {
-		return errorType;
-	}
-
-	public void setErrorType(List<ErrorInfo> errorType) {
-		this.errorType = errorType;
-	}
-
-	public List<ResponseParamModel> getResponseParamModelList() {
+	public List<ParamModel> getResponseParamModelList() {
 		return responseParamModelList;
 	}
 
-	public void setResponseParamModelList(List<ResponseParamModel> responseParamModelList) {
+	public void setResponseParamModelList(List<ParamModel> responseParamModelList) {
 		this.responseParamModelList = responseParamModelList;
 	}
 
@@ -134,22 +136,6 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 
 	public void setForWho(String forWho) {
 		this.forWho = forWho;
-	}
-
-	public String getRequestPojoName() {
-		return requestPojoName;
-	}
-
-	public void setRequestPojoName(String requestPojoName) {
-		this.requestPojoName = requestPojoName;
-	}
-
-	public String getResponsePojoName() {
-		return responsePojoName;
-	}
-
-	public void setResponsePojoName(String responsePojoName) {
-		this.responsePojoName = responsePojoName;
 	}
 
 	public boolean isGenSDK() {
@@ -184,37 +170,16 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 		this.curlExample = curlExample;
 	}
 
-	public List<PathParamModel> getPathParamModelList() {
-		return pathParamModelList;
+	public Optional<Class> getResponseClass() {
+		return responseClass;
 	}
 
-	public void setPathParamModelList(List<PathParamModel> pathParamModelList) {
-		this.pathParamModelList = pathParamModelList;
+	public void setResponseClass(Optional<Class> responseClass) {
+		this.responseClass = responseClass;
 	}
 
 	@Override
 	public String toString() {
-		return "CodeGenModel{" +
-				"docSeq=" + docSeq +
-				", apiName='" + apiName + '\'' +
-				", apiMethodName='" + apiMethodName + '\'' +
-				", description='" + description + '\'' +
-				", host='" + host + '\'' +
-				", url='" + url + '\'' +
-				", forWho='" + forWho + '\'' +
-				", httpMethod='" + httpMethod + '\'' +
-				", requestPojoName='" + requestPojoName + '\'' +
-				", responsePojoName='" + responsePojoName + '\'' +
-				", requestParamModelList=" + requestParamModelList +
-				", pathParamModelList=" + pathParamModelList +
-				", responseParamModelList=" + responseParamModelList +
-				", responseDIY='" + responseDIY + '\'' +
-				", errorType=" + errorType +
-				", curlExample='" + curlExample + '\'' +
-				", successReturn=" + successReturn +
-				", remark='" + remark + '\'' +
-				", isDeprecated=" + isDeprecated +
-				", isGenSDK=" + isGenSDK +
-				'}';
+		return JSON.toJSONString(this);
 	}
 }

@@ -1,16 +1,18 @@
 package com.jtool.codegenbuilderplugin.model;
 
+import com.alibaba.fastjson.JSON;
 
-import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ParamModel {
+public class ParamModel implements Comparable<ParamModel> {
 
     protected String key;
     protected boolean required;
-    protected List<Annotation> constraint;
+    protected List<String> constraintStr;
     protected String comment;
     protected String type;
+    protected List<ParamModel> subParamModel = new ArrayList<>();
 
     public String getKey() {
         return key;
@@ -28,12 +30,12 @@ public abstract class ParamModel {
         this.required = required;
     }
 
-    public List<Annotation> getConstraint() {
-        return constraint;
+    public List<String> getConstraintStr() {
+        return constraintStr;
     }
 
-    public void setConstraint(List<Annotation> constraint) {
-        this.constraint = constraint;
+    public void setConstraintStr(List<String> constraintStr) {
+        this.constraintStr = constraintStr;
     }
 
     public String getComment() {
@@ -50,5 +52,23 @@ public abstract class ParamModel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<ParamModel> getSubParamModel() {
+        return subParamModel;
+    }
+
+    public void setSubParamModel(List<ParamModel> subParamModel) {
+        this.subParamModel = subParamModel;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
+
+    @Override
+    public int compareTo(ParamModel o) {
+        return this.getKey().compareTo(o.getKey());
     }
 }
