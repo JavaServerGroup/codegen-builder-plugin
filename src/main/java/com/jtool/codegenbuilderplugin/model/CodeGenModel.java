@@ -20,6 +20,8 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 	private String curlExample;
 	private Optional<Class> requestClass;
 	private Optional<Class> responseClass;
+	private Class[] requestGroups;
+	private Class[] responseGroups;
 
 	private String successReturnJsonStr;
 	private String remark;
@@ -176,6 +178,22 @@ public class CodeGenModel implements Comparable<CodeGenModel> {
 
 	public void setResponseClass(Optional<Class> responseClass) {
 		this.responseClass = responseClass;
+	}
+
+	public Class[] getRequestGroups() {
+		return requestGroups;
+	}
+
+	public void setRequestGroups(Class[] requestGroups) {
+		this.requestGroups = requestGroups;
+	}
+
+	public Class[] getResponseGroups() {
+		return responseGroups;
+	}
+
+	public void setResponseGroups(Class[] responseGroups) {
+		this.responseGroups = responseGroups;
 	}
 
 	@Override

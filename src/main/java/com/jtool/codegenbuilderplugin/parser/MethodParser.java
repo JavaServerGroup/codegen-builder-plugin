@@ -5,7 +5,10 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.jtool.codegenannotation.*;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -64,9 +67,11 @@ public class MethodParser {
 
         //分析request的class的参数列表
         codeGenModel.setRequestClass(parseRequestClass(method));
+        codeGenModel.setRequestGroups(parseRequestGroups(method));
 
         //分析response的class的参数列表
         codeGenModel.setResponseClass(parseResponseClass(method));
+        codeGenModel.setResponseGroups(parseResponseGroups(method));
 
         //分析是否rest
         codeGenModel.setRest(parseIsRest(method));
@@ -98,6 +103,17 @@ public class MethodParser {
         return codeGenModel;
     }
 
+    private static Class[] parseRequestGroups(Method method) {
+
+        CodeGenRequest codeGenRequest = method.getAnnotation(CodeGenRequest.class);
+        if (codeGenRequest != null) {
+            return codeGenRequest.groups();
+        } else {
+            return new Class[]{};
+        }
+
+    }
+
     private static Optional<Class> parseRequestClass(Method method) {
         CodeGenRequest codeGenRequest = method.getAnnotation(CodeGenRequest.class);
         if (codeGenRequest != null) {
@@ -113,6 +129,15 @@ public class MethodParser {
             return Optional.of(codeGenResponse.value());
         } else {
             return Optional.empty();
+        }
+    }
+
+    private static Class[] parseResponseGroups(Method method) {
+        CodeGenResponse codeGenResponse = method.getAnnotation(CodeGenResponse.class);
+        if (codeGenResponse != null) {
+            return codeGenResponse.groups();
+        } else {
+            return new Class[]{};
         }
     }
 
@@ -139,7 +164,7 @@ public class MethodParser {
 
         if(codeGenModel.getResponseClass().isPresent()) {
             try {
-                return JSON.toJSONString(genParamJsonObj(builderMojo, codeGenModel.getResponseClass().get()), SerializerFeature.PrettyFormat);
+                return JSON.toJSONString(genParamJsonObj(builderMojo, codeGenModel.getResponseClass().get(), codeGenModel.getResponseGroups()), SerializerFeature.PrettyFormat);
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | IOException e) {
                 e.printStackTrace();
             }
@@ -149,7 +174,7 @@ public class MethodParser {
     }
 
     //生成请求成功返回的json表示
-    public static Object genParamJsonObj(BuilderMojo builderMojo, Class clazz) throws ClassNotFoundException, IllegalArgumentException,
+    public static Object genParamJsonObj(BuilderMojo builderMojo, Class clazz, Class[] responseGroups) throws ClassNotFoundException,
             IllegalAccessException, InstantiationException, IOException {
 
         Object obj = clazz.newInstance();
@@ -157,6 +182,20 @@ public class MethodParser {
         for (Field field : FieldUtils.getAllFieldsList(clazz)) {
 
             field.setAccessible(true);
+
+            CodeGenField codeGenField = field.getAnnotation(CodeGenField.class);
+            if(codeGenField == null) {
+                field.set(obj, null);
+                continue;
+            } else {
+
+                final boolean shouldShow = isShouldShow(responseGroups, codeGenField.groups());
+
+                if(!shouldShow) {
+                    field.set(obj, null);
+                    continue;
+                }
+            }
 
             if (field.getType().equals(String.class)) {
                 field.set(obj, field.getName());
@@ -211,19 +250,37 @@ public class MethodParser {
                             collection.add(0);
                             break;
                         default:
-                            collection.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className))));
+                            collection.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className)), responseGroups));
                     }
                 }
 
                 //设置值到list
                 field.set(obj, collection);
 
+            } else if (field.getType().isEnum()) {
+                Enum[] enums = (Enum[])field.getType().getEnumConstants();
+                field.set(obj, enums[0]);
             } else if(!field.getType().isPrimitive()) {
-                field.set(obj, genParamJsonObj(builderMojo, field.getType()));
+                field.set(obj, genParamJsonObj(builderMojo, field.getType(), responseGroups));
             }
         }
 
         return obj;
+    }
+
+    private static boolean isShouldShow(Class<?>[] beanGroups, Class<?>[] codeGenGroups) {
+
+        boolean result = false;
+
+        List<Class> codeGenFieldGroupsList = Arrays.asList(codeGenGroups);
+        List<Class> beanGroupsList = Arrays.asList(beanGroups);
+
+        for(Class responseGroupClass : beanGroupsList){
+            if(codeGenFieldGroupsList.contains(responseGroupClass)) {
+                result = true;
+            }
+        }
+        return result;
     }
 
 
@@ -233,7 +290,7 @@ public class MethodParser {
 
         CodeGenRequest codeGenRequest = method.getAnnotation(CodeGenRequest.class);
         if (codeGenRequest != null) {
-            requestParamModelList.addAll(parseParamModel(builderMojo, codeGenRequest.value()));
+            requestParamModelList.addAll(parseParamModel(builderMojo, codeGenRequest.value(), codeGenRequest.groups()));
         }
 
         Collections.sort(requestParamModelList);
@@ -246,14 +303,14 @@ public class MethodParser {
 
         CodeGenResponse codeGenResponse = method.getAnnotation(CodeGenResponse.class);
         if (codeGenResponse != null) {
-            responseParamModelList.addAll(parseParamModel(builderMojo, codeGenResponse.value()));
+            responseParamModelList.addAll(parseParamModel(builderMojo, codeGenResponse.value(), codeGenResponse.groups()));
         }
 
         Collections.sort(responseParamModelList);
         return responseParamModelList;
     }
 
-    private static List<ParamModel> parseParamModel(BuilderMojo builderMojo, Class<?> clazz) {
+    private static List<ParamModel> parseParamModel(BuilderMojo builderMojo, Class<?> clazz, Class[] validateGroups) {
 
         List<ParamModel> result = new ArrayList<>();
 
@@ -263,12 +320,20 @@ public class MethodParser {
             CodeGenField codeGenField = field.getAnnotation(CodeGenField.class);
 
             if(codeGenField != null) {
+
+                if(!isShouldShow(validateGroups, codeGenField.groups())) {
+                    continue;
+                }
+
                 ParamModel paramModel = new ParamModel();
                 paramModel.setKey(field.getName());
                 paramModel.setRequired(paresFieldIsRequired(field));
                 paramModel.setComment(codeGenField.value());
                 paramModel.setType(field.getGenericType().getTypeName());
                 paramModel.setConstraintStr(constrainAnnotationToStr(field.getAnnotations()));
+                if(field.getType().isEnum()) {
+                    paramModel.getConstraintStr().add(enumTypeGenConstrainStr(field.getType()));
+                }
 
                 result.add(paramModel);
 
@@ -287,7 +352,7 @@ public class MethodParser {
                             // List集合中的参数类型的字节码
                             try {
                                 String genericsTypeStr = pt.getActualTypeArguments()[0].getTypeName();
-                                List<ParamModel> paramModelList = parseParamModel(builderMojo, builderMojo.getClassLoaderInterface().loadClass(genericsTypeStr));
+                                List<ParamModel> paramModelList = parseParamModel(builderMojo, builderMojo.getClassLoaderInterface().loadClass(genericsTypeStr), validateGroups);
                                 Collections.sort(paramModelList);
                                 paramModel.setSubParamModel(paramModelList);
                             } catch (ClassNotFoundException e) {
@@ -298,17 +363,29 @@ public class MethodParser {
                         throw new RuntimeException("不应该使用Map, 请使用pojo");
                     } else {
                         // 如果是普通的类
-                        List<ParamModel> paramModelList = parseParamModel(builderMojo, field.getType());
+                        List<ParamModel> paramModelList = parseParamModel(builderMojo, field.getType(), validateGroups);
                         Collections.sort(paramModelList);
                         paramModel.setSubParamModel(paramModelList);
                     }
                 } else {
-                    throw new RuntimeException("不应该使用简单类型");
+                    throw new RuntimeException("不应该使用简单类型: " + field.getName());
                 }
             }
         }
 
         return result;
+    }
+
+    private static String enumTypeGenConstrainStr(Class<?> anEnum) {
+        List<String> enumValueList = new ArrayList<>();
+
+        if(anEnum.isEnum()) {
+            Enum[] enums = (Enum[])anEnum.getEnumConstants() ;
+            for(Enum enumItem : enums){
+                enumValueList.add(enumItem.name());
+            }
+        }
+        return "必须为以下可用值之一: [ \"" + StringUtils.join(enumValueList, "\", \"") + "\" ]";
     }
 
     private static String paresHttpMethod(Method method) {
@@ -327,19 +404,13 @@ public class MethodParser {
     }
 
     private static String paresUrl(Method method) {
-        String result = "";
-        for (String url : method.getAnnotation(RequestMapping.class).value()) {
-            if (result.equals("")) {
-                result += url;
-            } else {
-                result += ", " + url;
-            }
-        }
-        return result;
+        return String.join(", ", method.getAnnotation(RequestMapping.class).value());
     }
 
     private static boolean paresFieldIsRequired(Field field) {
-        return field.getAnnotation(NotNull.class) != null;
+        return field.getAnnotation(NotNull.class) != null ||
+                field.getAnnotation(NotEmpty.class) != null ||
+                field.getAnnotation(NotBlank.class) != null;
     }
 
 }

@@ -18,9 +18,7 @@ public class FileFinder {
             builderMojo.setScanBasePackage(builderMojo.getScanBasePackage().trim());
         }
 
-        File scanBasePackageFile = makeScanPackageFile(builderMojo);
-
-        return findAllFileNeedToParse(scanBasePackageFile);
+        return findAllFileNeedToParse(makeScanPackageFile(builderMojo));
     }
 
     //递归找出所有需要分析的文件(.java结尾的文件)
@@ -56,10 +54,6 @@ public class FileFinder {
 
     //将包名转化为路径
     private static String makePackagePath(String packageName) {
-        String result = "";
-        for (String str : packageName.split("\\.")) {
-            result += str + "/";
-        }
-        return result;
+        return String.join("/", packageName.split("\\."));
     }
 }

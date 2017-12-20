@@ -6,7 +6,7 @@
 
     <groupId>com.jtool</groupId>
     <artifactId>codegen-builder-plugin</artifactId>
-    <version>0.0.5</version>
+    <version>0.1.0</version>
     <packaging>maven-plugin</packaging>
 
     <build>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>3.7</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.jtool</groupId>
             <artifactId>codegen-annotation</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>com.jtool</groupId>
             <artifactId>jtool-validation</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.4</version>
         </dependency>
 
 

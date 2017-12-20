@@ -6,14 +6,9 @@ import com.jtool.codegenbuilderplugin.classLoader.MavenPluginContextClassLoader;
 import com.jtool.codegenbuilderplugin.finder.ExceptionFinder;
 import com.jtool.codegenbuilderplugin.finder.FileFinder;
 import com.jtool.codegenbuilderplugin.finder.MethodFinder;
-import com.jtool.codegenbuilderplugin.generator.ApiGenerator;
 import com.jtool.codegenbuilderplugin.generator.DocMdFormatGenerator;
-import com.jtool.codegenbuilderplugin.generator.HtmlGenerator;
-import com.jtool.codegenbuilderplugin.generator.PojoGenerator;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ExceptionModel;
-import com.jtool.codegenbuilderplugin.model.LogicInfo;
-import com.jtool.codegenbuilderplugin.parser.LogicInfoParser;
 import com.jtool.codegenbuilderplugin.parser.MethodParser;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -25,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @goal build
@@ -49,11 +43,6 @@ public class BuilderMojo extends AbstractMojo {
     /**
      * @parameter
      */
-    private Map<String, String> hosts;
-
-    /**
-     * @parameter
-     */
     private String projectName = "CodeGenDoc";
 
     /**
@@ -68,26 +57,6 @@ public class BuilderMojo extends AbstractMojo {
      */
     private String outPath;
 
-    /**
-     * @parameter expression = "${project.basedir}/docSource/info.html"
-     * @required
-     * @readonly
-     */
-    private File infoHtmlFile;
-
-    /**
-     * @parameter expression = "${project.basedir}/docSource/changeLog.html"
-     * @required
-     * @readonly
-     */
-    private File changeLogHtmlFile;
-
-    /**
-     * @parameter expression = "${skipGenAndroidSDK}"
-     * @parameter default-value = "false"
-     */
-    private boolean skipGenAndroidSDK;
-
     private ClassLoaderInterface classLoaderInterface;
 
     private String scanSource = "/src/main/java/";
@@ -100,9 +69,6 @@ public class BuilderMojo extends AbstractMojo {
         //递归找出需要扫描的file
         List<File> files = FileFinder.findAllFileNeedToParse(this);
 
-        //递归扫描scanBasePackage下的<logicInfo></logicInfo>内的内容
-        List<LogicInfo> logicInfoList = LogicInfoParser.parseLogicInfoFromFiles(files);
-
         //遍历带有@CodeGenApi注解的方法
         List<Method> methodLists = MethodFinder.findAllCodeGenApiMethod(this, files);
 
@@ -113,45 +79,18 @@ public class BuilderMojo extends AbstractMojo {
         checkDuplicateExceptionCodeDefine(exceptionModels);
 
         //遍历method集合，解析出可用的apiModel对象集合
-        List<CodeGenModel> codeGenModelList = null;
+        List<CodeGenModel> codeGenModelList;
         try {
             codeGenModelList = MethodParser.parseMethodToCodeGenModel(this, methodLists);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | IOException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            return;
         }
 
         this.getLog().debug(JSON.toJSONString(codeGenModelList));
 
-        //生成html格式的文档。
-        HtmlGenerator.genHtmlDoc(this, codeGenModelList, logicInfoList);
-
-        //生成pojo
-//        try {
-//            PojoGenerator.genPojo(this, codeGenModelList);
-//        } catch (IOException | ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
-        //生成api
-//        try {
-//            if(!this.skipGenAndroidSDK) {
-//                ApiGenerator.genApi(this, codeGenModelList);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (Exception e) {
-//            this.getLog().debug("生成api的时候发生错误");
-//            e.printStackTrace();
-//        }
-
         //生成md文件
-        DocMdFormatGenerator.genMdDoc(this, codeGenModelList, logicInfoList, exceptionModels);
+        DocMdFormatGenerator.genMdDoc(this, codeGenModelList, exceptionModels);
     }
 
     private void checkDuplicateExceptionCodeDefine(List<ExceptionModel> exceptionModels) {
@@ -177,10 +116,6 @@ public class BuilderMojo extends AbstractMojo {
         }
     }
 
-    public File getInfoHtmlFile() {
-        return infoHtmlFile;
-    }
-
     public String getOutPath() {
         return outPath;
     }
@@ -203,10 +138,6 @@ public class BuilderMojo extends AbstractMojo {
 
     public void setOutPath(String outPath) {
         this.outPath = outPath;
-    }
-
-    public void setInfoHtmlFile(File infoHtmlFile) {
-        this.infoHtmlFile = infoHtmlFile;
     }
 
     public ClassLoaderInterface getClassLoaderInterface() {
@@ -241,19 +172,4 @@ public class BuilderMojo extends AbstractMojo {
         this.projectName = projectName;
     }
 
-    public File getChangeLogHtmlFile() {
-        return changeLogHtmlFile;
-    }
-
-    public void setChangeLogHtmlFile(File changeLogHtmlFile) {
-        this.changeLogHtmlFile = changeLogHtmlFile;
-    }
-
-    public Map<String, String> getHosts() {
-        return hosts;
-    }
-
-    public void setHosts(Map<String, String> hosts) {
-        this.hosts = hosts;
-    }
 }

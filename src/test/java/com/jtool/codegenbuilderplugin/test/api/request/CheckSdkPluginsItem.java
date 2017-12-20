@@ -8,7 +8,7 @@ public class CheckSdkPluginsItem {
     @CodeGenField("插件id")
     private String id;
 
-    @CodeGenField("插件版本")
+    @CodeGenField(value = "插件版本", groups = Add.class)
     private Integer version;
 
     public String getId() {

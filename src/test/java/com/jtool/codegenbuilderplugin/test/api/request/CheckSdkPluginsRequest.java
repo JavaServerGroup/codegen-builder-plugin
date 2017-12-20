@@ -9,52 +9,27 @@ import java.util.List;
 
 public class CheckSdkPluginsRequest extends BaseCheckSdkPluginsRequest {
 
-    @CodeGenField("渠道")
+    @CodeGenField(value = "唯一id")
+    private String id;
+
+    @CodeGenField(value = "渠道", groups = Add.class)
     @NotNull
     private String channel;
 
-    @CodeGenField("宿主应用版本号")
+    @CodeGenField(value = "md5值", groups = {Add.class, Check.class})
     @NotNull
-    private String clientVer;
+    private String md5;
 
-    @CodeGenField("设备品牌")
-    @NotNull
-    private String brand;
-
-    @CodeGenField("设备型号")
-    @NotNull
-    private String model;
-
-    @CodeGenField("分辨率")
-    @NotNull
-    private String resolution;
-
-    @CodeGenField("宿主应用包名")
-    @NotNull
-    private String packageName;
-
-    @CodeGenField("sdk版本号，int类型")
-    @NotNull
-    private Integer sdkVer;
-
-    @CodeGenField("插件信息集合")
+    @CodeGenField(value = "插件信息集合", groups = Add.class)
     @NotNull
     private List<CheckSdkPluginsItem> pluginsInfo;
 
-    public String getImsi() {
-        return imsi;
+    public String getId() {
+        return id;
     }
 
-    public void setImsi(String imsi) {
-        this.imsi = imsi;
-    }
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getChannel() {
@@ -65,52 +40,12 @@ public class CheckSdkPluginsRequest extends BaseCheckSdkPluginsRequest {
         this.channel = channel;
     }
 
-    public String getClientVer() {
-        return clientVer;
+    public String getMd5() {
+        return md5;
     }
 
-    public void setClientVer(String clientVer) {
-        this.clientVer = clientVer;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getResolution() {
-        return resolution;
-    }
-
-    public void setResolution(String resolution) {
-        this.resolution = resolution;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public Integer getSdkVer() {
-        return sdkVer;
-    }
-
-    public void setSdkVer(Integer sdkVer) {
-        this.sdkVer = sdkVer;
+    public void setMd5(String md5) {
+        this.md5 = md5;
     }
 
     public List<CheckSdkPluginsItem> getPluginsInfo() {

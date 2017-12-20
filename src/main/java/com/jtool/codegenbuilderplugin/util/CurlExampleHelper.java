@@ -56,7 +56,7 @@ public class CurlExampleHelper {
                 String queryString = "";
 
                 if(codeGenModel.isRest() && codeGenModel.getRequestClass().isPresent()) {
-                    final Object obj = genParamJsonObj(builderMojo, codeGenModel.getRequestClass().get());
+                    final Object obj = genParamJsonObj(builderMojo, codeGenModel.getRequestClass().get(), codeGenModel.getRequestGroups());
                     queryString += " -d '" + JSON.toJSONString(obj, SerializerFeature.PrettyFormat) + "'";
 
                 } else {

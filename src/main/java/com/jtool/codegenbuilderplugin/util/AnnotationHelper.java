@@ -9,12 +9,14 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class AnnotationHelper {
 
     public static boolean hasAnnotation(AnnotatedElement annotatedElement, Class annotationClass) {
         return annotatedElement.getAnnotation(annotationClass) != null;
     }
-
 
     public static List<String> constrainAnnotationToStr(Annotation[] annotations) {
 
@@ -25,6 +27,10 @@ public class AnnotationHelper {
                 result.add("必须为True");
             } else if (annotation instanceof AssertFalse) {
                 result.add("必须为False");
+            } else if(annotation instanceof NotEmpty) {
+                result.add("必须有值，长度大于0");
+            } else if(annotation instanceof NotBlank) {
+                result.add("必须有值，不能是空白字符，长度大于0");
             } else if (annotation instanceof Digits) {
                 Digits digits = (Digits) annotation;
                 if (digits.fraction() == 0) {
@@ -44,7 +50,7 @@ public class AnnotationHelper {
                 result.add("必须小于或等于" + ((DecimalMax) annotation).value());
             } else if (annotation instanceof Size) {
                 Size size = (Size) annotation;
-                result.add("长度边界[" + size.min() + " : " + size.max());
+                result.add("长度边界[" + size.min() + " : " + size.max() + "]");
             } else if (annotation instanceof Past) {
                 result.add("必须为过去的某个时间");
             } else if (annotation instanceof Future) {

@@ -3,7 +3,6 @@ package com.jtool.codegenbuilderplugin.generator;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ExceptionModel;
-import com.jtool.codegenbuilderplugin.model.LogicInfo;
 import com.jtool.codegenbuilderplugin.model.ParamModel;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.*;
@@ -13,22 +12,19 @@ import java.util.*;
 
 public class DocMdFormatGenerator {
 
-    public static void genMdDoc(BuilderMojo builderMojo, List<CodeGenModel> codeGenModelList, List<LogicInfo> logicInfos, List<ExceptionModel> exceptionModels) {
+    public static void genMdDoc(BuilderMojo builderMojo, List<CodeGenModel> codeGenModelList, List<ExceptionModel> exceptionModels) {
         Map<String, List<CodeGenModel>> codeGenModelMapByForWho = groupCodeGenModelListByFowWho(codeGenModelList);
         for(Map.Entry<String, List<CodeGenModel>> entry : codeGenModelMapByForWho.entrySet()) {
-            genEachMdDoc(builderMojo, entry.getKey(), entry.getValue(), logicInfos, exceptionModels);
+            genEachMdDoc(builderMojo, entry.getKey(), entry.getValue(), exceptionModels);
         }
     }
 
-    private static void genEachMdDoc(BuilderMojo builderMojo, String forWho, List<CodeGenModel> codeGenModelList, List<LogicInfo> logicInfoList, List<ExceptionModel> exceptionModels) {
+    private static void genEachMdDoc(BuilderMojo builderMojo, String forWho, List<CodeGenModel> codeGenModelList, List<ExceptionModel> exceptionModels) {
 
         //组装数据
         Map<String, Object> root = new HashMap<>();
         root.put("apiModelList", codeGenModelList);
         root.put("exceptionModels", exceptionModels);
-        if(logicInfoList != null && !logicInfoList.isEmpty()) {
-            root.put("logicInfoList", logicInfoList);
-        }
         root.put("projectName", builderMojo.getProjectName());
         root.put("hasRequestParams", true);//是否有请求参数
 
@@ -36,7 +32,7 @@ public class DocMdFormatGenerator {
         cfg.setClassForTemplateLoading(builderMojo.getClass(), "/template");
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        cfg.setSharedVariable("successReturnJson", new HtmlSuccessReturnJsonGenerator());
+        cfg.setSharedVariable("successReturnJson", new MdSuccessReturnJsonGenerator());
         cfg.setSharedVariable("returnParamDetail", new MdReturnParamDetailGenerator());
         cfg.setSharedVariable("isMaxDouble", new IsMaxDouble());
 
@@ -111,4 +107,30 @@ class MdReturnParamDetailGenerator implements TemplateMethodModelEx {
         return result + "</tr>";
     }
 
+}
+
+class MdSuccessReturnJsonGenerator implements TemplateMethodModelEx {
+
+    @Override
+    public Object exec(List list) throws TemplateModelException {
+
+        try {
+            if (list != null && list.size() == 1) {
+                return list.get(0).toString();
+            } else {
+                return " --- ";
+            }
+        } catch (NullPointerException e) {
+            return " --- ";
+        }
+
+    }
+}
+
+class IsMaxDouble implements TemplateMethodModelEx {
+    @Override
+    public Object exec(List list) throws TemplateModelException {
+        Double d = (Double)(((SimpleNumber)list.get(0)).getAsNumber());
+        return d == Double.MAX_VALUE;
+    }
 }

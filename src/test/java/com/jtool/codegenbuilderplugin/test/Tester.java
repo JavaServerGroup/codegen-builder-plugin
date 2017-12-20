@@ -26,16 +26,9 @@ public class Tester {
         builderMojo.setOutPath(baseDirFile.getAbsolutePath() + "/target/");
         builderMojo.setBasedir(baseDirFile);
 
-        Map<String, String> hosts = new Hashtable<>();
-        hosts.put("新加坡", "172.17.20.13");
-        hosts.put("爱尔兰", "172.17.0.158");
-        builderMojo.setHosts(hosts);
-
         builderMojo.setProjectName("codegen-builder-plugin");
         builderMojo.setScanSource("/src/test/java/");
         builderMojo.setScanBasePackage("com.jtool.codegenbuilderplugin");
-        builderMojo.setInfoHtmlFile(new File(baseDirFile.getAbsolutePath() + "/docsource/info.html"));
-        builderMojo.setChangeLogHtmlFile(new File(baseDirFile.getAbsolutePath() + "/docsource/changeLog.html"));
         builderMojo.execute();
     }
 }

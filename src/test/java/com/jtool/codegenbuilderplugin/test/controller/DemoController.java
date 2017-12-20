@@ -6,8 +6,10 @@ import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
 import com.jtool.codegenbuilderplugin.test.api.request.*;
 import com.jtool.codegenbuilderplugin.test.api.response.*;
+import com.jtool.codegenbuilderplugin.test.api.response.BaseResponse;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
+import com.jtool.codegenbuilderplugin.test.validate.Get;
 import com.jtool.validator.ParamBeanValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +25,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-/*
-<logicInfo>系统为不同的屏幕尺寸提供共4种可选的分辨率<br/>
-    正方形的缩略图有64*64，120*120，180*180，270*270；<br/>
-    比如你获取到的缩略图地址是：<br/>
-    "img0:/images/2015/11/5/64_64/f8cd21233d69d7c3ba5e74dda7ff3475.jpg"<br/>
-    那么在大屏手机里，你可以替换为<br/>
-    /images/2015/11/5/270_270/f8cd21233d69d7c3ba5e74dda7ff3475.jpg的地址来获取大屏的缩略图</logicInfo>
- */
 @Controller
 public class DemoController {
 
@@ -160,11 +154,37 @@ public class DemoController {
 	}
 
 	@CodeGenApi(name="检查插件", description = "检查插件是否需要更新")
-	@CodeGenRequest(value = CheckSdkPluginsRequest.class, isRest = true)
+	@CodeGenRequest(value = CheckSdkPluginsRequest.class, isRest = true, groups = Add.class)
 	@CodeGenResponse(CheckSdkPluginsResponse.class)
 	@RequestMapping(value = "/checkSdkPlugins", method = RequestMethod.POST)
 	public String checkSdkPlugins() {
 
+		return null;
+	}
+
+	@CodeGenApi(name = "获取sdk配置", description = "根据channel的名字获取该channel下的全部配置", docSeq = 7)
+	@CodeGenRequest(value = Channel.class, isRest = true, groups = Add.class)
+	@CodeGenResponse(value = GetSdkConfigResponse.class, groups = Get.class)
+	@RequestMapping(value = "/getSdkConfig", method = RequestMethod.GET)
+	@ResponseBody
+	public String getSdkConfig(Channel channel) throws ParamException {
+		return null;
+	}
+
+
+	@CodeGenApi(name = "测试枚举请求", description = "测试枚举请求", docSeq = 7)
+	@CodeGenRequest(value = EnumTypeRequest.class, isRest = true)
+	@CodeGenResponse(value = BaseResponse.class)
+	@RequestMapping(value = "/enumType", method = RequestMethod.POST)
+	@ResponseBody
+	public String enumType(EnumTypeRequest enumTypeRequest) throws ParamException {
+		return null;
+	}
+
+	@CodeGenApi(name = "获取sdk插件列表", description = "获取整个sdk插件列表", docSeq = 1)
+	@CodeGenResponse(GetSdkPluginsResponse.class)
+	@RequestMapping(value = "/getSdkPlugins", method = RequestMethod.GET)
+	public String getSdkPlugins() {
 		return null;
 	}
 
