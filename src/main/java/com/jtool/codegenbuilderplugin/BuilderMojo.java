@@ -10,6 +10,7 @@ import com.jtool.codegenbuilderplugin.generator.DocMdFormatGenerator;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ExceptionModel;
 import com.jtool.codegenbuilderplugin.parser.MethodParser;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -75,6 +76,8 @@ public class BuilderMojo extends AbstractMojo {
         //遍历所有定义的Exception
         List<ExceptionModel> exceptionModels = ExceptionFinder.findAllCodeGenException(this, files);
 
+        Collections.sort(exceptionModels);
+
         //检查是否有一样错误码的异常
         checkDuplicateExceptionCodeDefine(exceptionModels);
 
@@ -100,7 +103,7 @@ public class BuilderMojo extends AbstractMojo {
         for(int i = 0; i < exceptionModels.size(); i++) {
             for(int j = i + 1; j < exceptionModels.size(); j++) {
                 if( exceptionModels.get(i).getCode().equals(exceptionModels.get(j).getCode())) {
-                    throw new RuntimeException("一个项目里面不应该定义两个异常是有相同错误码的");
+                    throw new RuntimeException("一个项目里面不应该定义两个异常是有相同错误码的: " + exceptionModels.get(i).getCode());
                 }
             }
         }

@@ -9,7 +9,7 @@ public class ExceptionModel implements Comparable<ExceptionModel> {
 
 	@Override
 	public int compareTo(ExceptionModel o) {
-		return this.getCode().compareTo(o.getCode());
+		return o.getCode().compareTo(this.getCode());
 	}
 
 	public Integer getCode() {

@@ -57,7 +57,7 @@ public class CurlExampleHelper {
 
                 if(codeGenModel.isRest() && codeGenModel.getRequestClass().isPresent()) {
                     final Object obj = genParamJsonObj(builderMojo, codeGenModel.getRequestClass().get(), codeGenModel.getRequestGroups());
-                    queryString += " -d '" + JSON.toJSONString(obj, SerializerFeature.PrettyFormat) + "'";
+                    queryString += " -H 'Content-Type:application/json' -d '" + JSON.toJSONString(obj, SerializerFeature.PrettyFormat);
 
                 } else {
                     for(ParamModel requestParamModel : codeGenModel.getRequestParamModelList()) {

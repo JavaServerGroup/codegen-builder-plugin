@@ -2,7 +2,7 @@
 <b><a name="api列表" id="api列表" >API列表</a></b>
 
 <#list apiModelList as apiModelItem>
-* <a href="#${apiModelItem.apiName}">${apiModelItem.apiName}</a>
+* <a href="#${apiModelItem.apiName}">${apiModelItem.apiName} <#if apiModelItem.docSeq lt 100000000>(${apiModelItem.docSeq})</#if></a>
 </#list>
 
 <b><a href="#错误码定义" >错误码定义</a></b>
@@ -24,7 +24,7 @@ ${apiModelItem.curlExample}
 ### 请求参数说明
 <table>
 <tr>
-    <th width="100px">参数名</th><th width="100px">必要参数</th><th width="200px">限制</th><th>说明</th>
+    <th width="200px">参数名</th><th width="100px">必要参数</th><th width="200px">限制</th><th>说明</th>
 </tr>
 <#list apiModelItem.requestParamModelList as paramModelItem>
 ${returnParamDetail(paramModelItem)}
@@ -40,7 +40,7 @@ ${successReturnJson(apiModelItem.successReturnJsonStr)}
 ### 正确返回参数说明
 <table>
 <tr>
-    <th width="100px">参数名</th><th width="100px">必要参数</th><th width="200px">限制</th><th>说明</th>
+    <th width="200px">参数名</th><th width="100px">必要参数</th><th width="200px">限制</th><th>说明</th>
 </tr>
 <#list apiModelItem.responseParamModelList as paramModelItem>
 ${returnParamDetail(paramModelItem)}
