@@ -1,31 +1,34 @@
 package com.jtool.codegenbuilderplugin.test.exception;
 
+import com.jtool.codegenannotation.CodeGenExceptionTypeEnum;
+
+@CodeGenExceptionTypeEnum
 public enum ExceptionTypeEnum {
 
 	PARAMS_EXCEPTION("-3","参数错误"),
-	ORDER_ID_EXCEPTION("-29", "订单id错误");
+	BACK_END_EXCEPTION("-98", "后端错误");
 
-	private String exceptionCode;
-	private String message;
+	private String code;
+	private String desc;
 
-	private ExceptionTypeEnum(String exceptionCode, String message) {
-		this.exceptionCode = exceptionCode;
-		this.message = message;
+	private ExceptionTypeEnum(String code, String desc) {
+		this.code = code;
+		this.desc = desc;
 	}
 
-	public String getExceptionCode() {
-		return exceptionCode;
+	public String getCode() {
+		return code;
 	}
 
-	public void setExceptionCode(String exceptionCode) {
-		this.exceptionCode = exceptionCode;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getDesc() {
+		return desc;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 }

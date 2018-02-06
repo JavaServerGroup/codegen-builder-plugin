@@ -1,11 +1,15 @@
 package com.jtool.codegenbuilderplugin.finder;
 
 import com.jtool.codegenannotation.CodeGenExceptionDefine;
+import com.jtool.codegenannotation.CodeGenExceptionTypeEnum;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
 import com.jtool.codegenbuilderplugin.model.ExceptionModel;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ExceptionFinder {
@@ -40,13 +44,31 @@ public class ExceptionFinder {
             throw new RuntimeException("没有找到类:" + className);
         }
 
-        CodeGenExceptionDefine codeGenExceptionDefine = clazz.getAnnotation(CodeGenExceptionDefine.class);
-        if(codeGenExceptionDefine != null) {
-            ExceptionModel exceptionModel = new ExceptionModel();
-            exceptionModel.setCode(Integer.parseInt(codeGenExceptionDefine.code()));
-            exceptionModel.setDesc(codeGenExceptionDefine.desc());
+        CodeGenExceptionTypeEnum codeGenExceptionTypeEnum = clazz.getAnnotation(CodeGenExceptionTypeEnum.class);
+        if(codeGenExceptionTypeEnum != null) {
+            try {
+                Method getCode = clazz.getMethod("getCode");
+                Method getDesc = clazz.getMethod("getDesc");
+                //得到enum的所有实例
+                for (Object obj : clazz.getEnumConstants()) {
 
-            result.add(exceptionModel);
+                    ExceptionModel exceptionModel = new ExceptionModel();
+                    exceptionModel.setCode(Integer.valueOf((String)getCode.invoke(obj)));
+                    exceptionModel.setDesc((String)getDesc.invoke(obj));
+
+                    result.add(exceptionModel);
+
+                }
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+
+
         }
 
         return result;
