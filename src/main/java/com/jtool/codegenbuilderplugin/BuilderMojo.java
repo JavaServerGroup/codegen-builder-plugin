@@ -10,7 +10,6 @@ import com.jtool.codegenbuilderplugin.generator.DocMdFormatGenerator;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ExceptionModel;
 import com.jtool.codegenbuilderplugin.parser.MethodParser;
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,6 +19,7 @@ import org.apache.maven.project.MavenProject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,7 +29,7 @@ import java.util.List;
 public class BuilderMojo extends AbstractMojo {
 
     /**
-     * @parameter expression = "${project.basedir}"
+     * @parameter property = "project.basedir"
      * @required
      * @readonly
      */
@@ -47,7 +47,7 @@ public class BuilderMojo extends AbstractMojo {
     private String projectName = "CodeGenDoc";
 
     /**
-     * @parameter expression="${project}"
+     * @parameter property = "project"
      * @required
      * @readonly
      */

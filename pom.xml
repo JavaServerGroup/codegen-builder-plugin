@@ -6,7 +6,7 @@
 
     <groupId>com.jtool</groupId>
     <artifactId>codegen-builder-plugin</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
     <packaging>maven-plugin</packaging>
 
     <build>
@@ -14,16 +14,38 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
                     <compilerVersion>1.8</compilerVersion>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.5.1</version>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -49,26 +71,13 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.6</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>3.0.3</version>
-        </dependency>
+
         <dependency>
             <groupId>com.jtool</groupId>
             <artifactId>codegen-annotation</artifactId>
-            <version>0.0.5</version>
+            <version>0.0.6</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-            <version>3.0.3</version>
-        </dependency>
+
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
@@ -82,9 +91,8 @@
         <dependency>
             <groupId>com.jtool</groupId>
             <artifactId>jtool-validation</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </dependency>
-
 
         <dependency>
             <groupId>junit</groupId>
@@ -92,11 +100,6 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>javax</groupId>-->
-        <!--<artifactId>javaee-api</artifactId>-->
-        <!--<version>7.0</version>-->
-        <!--</dependency>-->
 
     </dependencies>
 

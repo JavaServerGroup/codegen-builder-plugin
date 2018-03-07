@@ -2,16 +2,20 @@ package com.jtool.codegenbuilderplugin.parser;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.jtool.codegenannotation.*;
+import com.jtool.codegenannotation.CodeGenApi;
+import com.jtool.codegenannotation.CodeGenField;
+import com.jtool.codegenannotation.CodeGenRequest;
+import com.jtool.codegenannotation.CodeGenResponse;
 import com.jtool.codegenbuilderplugin.BuilderMojo;
-import com.jtool.codegenbuilderplugin.model.*;
+import com.jtool.codegenbuilderplugin.model.CodeGenModel;
+import com.jtool.codegenbuilderplugin.model.ParamModel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.lang.reflect.Field;

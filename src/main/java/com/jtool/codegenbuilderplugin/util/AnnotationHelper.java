@@ -9,9 +9,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-
 public class AnnotationHelper {
 
     public static boolean hasAnnotation(AnnotatedElement annotatedElement, Class annotationClass) {
