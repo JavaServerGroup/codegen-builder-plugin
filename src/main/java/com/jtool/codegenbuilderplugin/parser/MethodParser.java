@@ -238,23 +238,27 @@ public class MethodParser {
 
                     //List里面的泛型参数
                     switch (className) {
-                        case "java.lang.String" :
+                        case "java.lang.String":
                             collection.add("string");
                             break;
-                        case "java.lang.Boolean" :
+                        case "java.lang.Boolean":
                             collection.add(false);
                             break;
-                        case "java.lang.Short" :
-                        case "java.lang.Integer" :
-                        case "java.lang.Long" :
+                        case "java.lang.Short":
+                        case "java.lang.Integer":
+                        case "java.lang.Long":
                             collection.add(0);
                             break;
-                        case "java.lang.Float" :
-                        case "java.lang.Double" :
+                        case "java.lang.Float":
+                        case "java.lang.Double":
                             collection.add(0);
                             break;
                         default:
-                            collection.add(genParamJsonObj(builderMojo, (builderMojo.getClassLoaderInterface().loadClass(className)), responseGroups));
+                            if(builderMojo.getClassLoaderInterface().loadClass(className).isEnum()) {
+                                collection.add(builderMojo.getClassLoaderInterface().loadClass(className).getEnumConstants()[0]);
+                            } else {
+                                collection.add(genParamJsonObj(builderMojo, builderMojo.getClassLoaderInterface().loadClass(className), responseGroups));
+                            }
                     }
                 }
 
@@ -270,6 +274,25 @@ public class MethodParser {
         }
 
         return obj;
+    }
+
+    private static Optional<Class> isListWithEnum(BuilderMojo builderMojo, Field field) throws ClassNotFoundException {
+        if(field.getType().equals(List.class) || field.getType().equals(Set.class)) {
+
+            Type fc = field.getGenericType();
+
+            if (fc != null && fc instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) fc;
+                String className = pt.getActualTypeArguments()[0].getTypeName();
+
+                if(builderMojo.getClassLoaderInterface().loadClass(className).isEnum()) {
+                    return Optional.of(builderMojo.getClassLoaderInterface().loadClass(className));
+                }
+            }
+
+        }
+
+        return Optional.empty();
     }
 
     private static boolean isShouldShow(Class<?>[] beanGroups, Class<?>[] codeGenGroups) {
@@ -288,7 +311,7 @@ public class MethodParser {
     }
 
 
-    private static List<ParamModel> parseRequestParam(BuilderMojo builderMojo, Method method) {
+    private static List<ParamModel> parseRequestParam(BuilderMojo builderMojo, Method method) throws ClassNotFoundException {
 
         List<ParamModel> requestParamModelList = new ArrayList<>();
 
@@ -301,7 +324,7 @@ public class MethodParser {
         return requestParamModelList;
     }
 
-    private static List<ParamModel> parseResponseParam(BuilderMojo builderMojo, Method method) {
+    private static List<ParamModel> parseResponseParam(BuilderMojo builderMojo, Method method) throws ClassNotFoundException {
 
         List<ParamModel> responseParamModelList = new ArrayList<>();
 
@@ -314,7 +337,7 @@ public class MethodParser {
         return responseParamModelList;
     }
 
-    private static List<ParamModel> parseParamModel(BuilderMojo builderMojo, Class<?> clazz, Class[] validateGroups) {
+    private static List<ParamModel> parseParamModel(BuilderMojo builderMojo, Class<?> clazz, Class[] validateGroups) throws ClassNotFoundException {
 
         List<ParamModel> result = new ArrayList<>();
 
@@ -338,6 +361,7 @@ public class MethodParser {
                 if(field.getType().isEnum()) {
                     paramModel.getConstraintStr().add(enumTypeGenConstrainStr(field.getType()));
                 }
+                isListWithEnum(builderMojo, field).ifPresent(aClass -> paramModel.getConstraintStr().add(enumTypeGenConstrainStr(aClass)));
 
                 result.add(paramModel);
 
