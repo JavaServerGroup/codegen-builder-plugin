@@ -8,8 +8,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Hashtable;
-import java.util.Map;
 
 public class Tester {
 
@@ -28,7 +26,7 @@ public class Tester {
 
         builderMojo.setProjectName("codegen-builder-plugin");
         builderMojo.setScanSource("/src/test/java/");
-        builderMojo.setScanBasePackage("com.jtool.codegenbuilderplugin");
+        builderMojo.setScanBasePackage("com.jtool.codegenbuilderplugin.test");
         builderMojo.execute();
     }
 }

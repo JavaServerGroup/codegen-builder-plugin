@@ -5,8 +5,9 @@ import com.jtool.codegenannotation.CodeGenApi;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
 import com.jtool.codegenbuilderplugin.test.api.request.*;
-import com.jtool.codegenbuilderplugin.test.api.response.BaseResponse;
+import com.jtool.codegenbuilderplugin.test.api.request.BaseResponse;
 import com.jtool.codegenbuilderplugin.test.api.response.*;
+import com.jtool.codegenbuilderplugin.test.api.response.User;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
 import com.jtool.codegenbuilderplugin.test.validate.Get;
@@ -194,6 +195,14 @@ public class DemoController {
 	@CodeGenResponse(LoginResponse.class)
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login() {
+		return null;
+	}
+
+	@CodeGenApi(name = "用户", description = "用户", docSeq = 1)
+	@CodeGenRequest(value = AddUserRequest.class, isRest = true)
+	@CodeGenResponse(LoginResponse.class)
+	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
+	public String addUser() {
 		return null;
 	}
 }

@@ -42,7 +42,7 @@ public class FileFinder {
     }
 
     //生成需要递归扫描的路径对应的File实例
-    private static File makeScanPackageFile(BuilderMojo builderMojo) {
+    public static File makeScanPackageFile(BuilderMojo builderMojo) {
         String scanBasePackagePath = makePackagePath(builderMojo.getScanBasePackage());
         File scanBasePackageFile = new File(builderMojo.getBasedir().getAbsolutePath() + builderMojo.getScanSource() + scanBasePackagePath);
         builderMojo.getLog().debug("准备扫描的路径：" + scanBasePackageFile.getAbsolutePath());

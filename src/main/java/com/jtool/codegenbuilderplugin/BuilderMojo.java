@@ -6,10 +6,12 @@ import com.jtool.codegenbuilderplugin.classLoader.MavenPluginContextClassLoader;
 import com.jtool.codegenbuilderplugin.finder.ExceptionFinder;
 import com.jtool.codegenbuilderplugin.finder.FileFinder;
 import com.jtool.codegenbuilderplugin.finder.MethodFinder;
+import com.jtool.codegenbuilderplugin.generator.AndroidClientGenerator;
 import com.jtool.codegenbuilderplugin.generator.DocMdFormatGenerator;
 import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ExceptionModel;
 import com.jtool.codegenbuilderplugin.parser.MethodParser;
+import com.sun.codemodel.internal.JClassAlreadyExistsException;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -94,6 +96,21 @@ public class BuilderMojo extends AbstractMojo {
 
         //生成md文件
         DocMdFormatGenerator.genMdDoc(this, codeGenModelList, exceptionModels);
+
+        try {
+            AndroidClientGenerator androidClientGenerator = new AndroidClientGenerator(this);
+            androidClientGenerator.genClasses(codeGenModelList);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JClassAlreadyExistsException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkDuplicateExceptionCodeDefine(List<ExceptionModel> exceptionModels) {

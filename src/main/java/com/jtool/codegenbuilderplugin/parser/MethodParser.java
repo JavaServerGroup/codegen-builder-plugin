@@ -177,7 +177,9 @@ public class MethodParser {
         return "";
     }
 
-    //生成请求成功返回的json表示
+    /**
+     * 生成请求成功返回的json表示
+     */
     public static Object genParamJsonObj(BuilderMojo builderMojo, Class clazz, Class[] responseGroups) throws ClassNotFoundException,
             IllegalAccessException, InstantiationException, IOException {
 
