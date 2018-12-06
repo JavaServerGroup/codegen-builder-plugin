@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.jtool.codegenannotation.CodeGenApi;
 import com.jtool.codegenannotation.CodeGenRequest;
 import com.jtool.codegenannotation.CodeGenResponse;
-import com.jtool.codegenbuilderplugin.test.api.request.*;
 import com.jtool.codegenbuilderplugin.test.api.request.BaseResponse;
+import com.jtool.codegenbuilderplugin.test.api.request.User;
+import com.jtool.codegenbuilderplugin.test.api.request.*;
 import com.jtool.codegenbuilderplugin.test.api.response.*;
-import com.jtool.codegenbuilderplugin.test.api.response.User;
 import com.jtool.codegenbuilderplugin.test.exception.BackEndException;
 import com.jtool.codegenbuilderplugin.test.exception.ParamException;
 import com.jtool.codegenbuilderplugin.test.validate.Get;
@@ -205,4 +205,5 @@ public class DemoController {
 	public String addUser() {
 		return null;
 	}
+
 }

@@ -6,7 +6,7 @@
 
     <groupId>com.jtool</groupId>
     <artifactId>codegen-builder-plugin</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <packaging>maven-plugin</packaging>
 
     <build>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>4.1.6.RELEASE</version>
+            <version>5.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

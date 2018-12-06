@@ -11,6 +11,8 @@ import com.jtool.codegenbuilderplugin.model.CodeGenModel;
 import com.jtool.codegenbuilderplugin.model.ParamModel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -169,7 +171,7 @@ public class MethodParser {
         if(codeGenModel.getResponseClass().isPresent()) {
             try {
                 return JSON.toJSONString(genParamJsonObj(builderMojo, codeGenModel.getResponseClass().get(), codeGenModel.getResponseGroups()), SerializerFeature.PrettyFormat);
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | IOException e) {
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             }
         }
@@ -181,7 +183,7 @@ public class MethodParser {
      * 生成请求成功返回的json表示
      */
     public static Object genParamJsonObj(BuilderMojo builderMojo, Class clazz, Class[] responseGroups) throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException, IOException {
+            IllegalAccessException, InstantiationException {
 
         Object obj = clazz.newInstance();
 
@@ -274,6 +276,8 @@ public class MethodParser {
                 field.set(obj, genParamJsonObj(builderMojo, field.getType(), responseGroups));
             }
         }
+
+        builderMojo.getLog().debug("分析完之后: " + obj);
 
         return obj;
     }
@@ -419,6 +423,15 @@ public class MethodParser {
     }
 
     private static String paresHttpMethod(Method method) {
+
+        if(method.getAnnotation(GetMapping.class) != null) {
+            return "GET";
+        }
+
+        if(method.getAnnotation(PostMapping.class) != null) {
+            return "POST";
+        }
+
         String result = "";
         for (RequestMethod requestMethod : method.getAnnotation(RequestMapping.class).method()) {
             if (result.equals("")) {
@@ -434,6 +447,15 @@ public class MethodParser {
     }
 
     private static String paresUrl(Method method) {
+
+        if(method.getAnnotation(GetMapping.class) != null) {
+            return String.join(", ", method.getAnnotation(GetMapping.class).value());
+        }
+
+        if(method.getAnnotation(PostMapping.class) != null) {
+            return String.join(", ", method.getAnnotation(PostMapping.class).value());
+        }
+
         return String.join(", ", method.getAnnotation(RequestMapping.class).value());
     }
 
